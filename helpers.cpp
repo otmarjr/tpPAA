@@ -7,6 +7,7 @@
 
 #include "helpers.h"
 #include <algorithm>
+#include <stdexcept>
 
 using namespace std;
 
@@ -25,4 +26,9 @@ std::string &helpers::trim_string_a_direita(std::string &s)
 std::string &helpers::trim_string(std::string &s) 
 {
         return trim_string_a_esquerda(trim_string_a_direita(s));
+}
+
+void helpers::levantar_erro_execucao(string mensagem)
+{
+    throw std::runtime_error(mensagem.c_str());
 }

@@ -15,9 +15,10 @@ using namespace std;
 
 class projeto_software {
 public:
-    static list<projeto_software> carregar_lista_do_arquivo(string caminho_arquivo_info_projetos);
+    static list<projeto_software*> carregar_lista_do_arquivo(string caminho_arquivo_info_projetos);
     projeto_software(string linha_info_projetos);
     string para_string(); // Utilizada para depurar defeitos.
+    static void desalocar_lista_projeto_software(list<projeto_software*> lista);
 private:
     int id;
     string linguagem_programacao;

@@ -12,7 +12,11 @@
 #include <stdlib.h>
 #include <ctime>
 #include <time.h>
+#include <stdexcept>
 #include "helpers.h"
+#include <iostream>
+#include <fstream>
+
 
 projeto_software::projeto_software(string linha_info_projetos)
 {
@@ -98,3 +102,34 @@ string projeto_software::para_string()
     return formatador.str();
 }
 
+
+list<projeto_software*> projeto_software::carregar_lista_do_arquivo(string caminho_arquivo_info_projetos)
+{
+    list<projeto_software*> l;
+    
+    string linha;
+    ifstream arquivo(caminho_arquivo_info_projetos.c_str());
+
+    if (arquivo.is_open()) {
+        while (getline(arquivo, linha)) 
+        {
+            l.push_back(new projeto_software(linha));
+        }
+        arquivo.close();
+    } else {
+        stringstream buffer_mensagem;
+        buffer_mensagem<<"Não foi possível abrir o arquivo '"<<caminho_arquivo_info_projetos<<"' com detalhes dos projetos de software para análise. Verifique se o processo corrente tem permissão de acesso ao mesmo.";
+        
+        helpers::levantar_erro_execucao(buffer_mensagem.str());
+    }
+    
+    return l;
+}
+
+void projeto_software::desalocar_lista_projeto_software(list<projeto_software*> lista)
+{
+    while (!lista.empty())
+    {
+        delete lista.front(), lista.pop_front();
+    }
+}

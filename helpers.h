@@ -14,6 +14,7 @@ public:
     static string& trim_string(string &texto);
     static string& trim_string_a_direita(string &texto);
     static string& trim_string_a_esquerda(string &texto);
+    static void levantar_erro_execucao(string mensagem);
 private:
 
 };

@@ -15,8 +15,7 @@ using namespace std;
  * 
  */
 
-
-static void testar_entradas()
+static void testar_linhas()
 {
     projeto_software* p1 = new projeto_software("34707|Shell|19/x çalışma ortamı|2013-09-10 16:15:09| ");
     projeto_software* p2 = new projeto_software("3586|JavaScript|Rapid Interface Builder (RIB) is a browser-based design tool for quickly prototyping and creating the user interface for web applications. Layout your UI by dropping widgets onto a canvas. Run the UI in an interactive \"Preview mode\". Export the generated |2012-09-17 23:08:15|zhizhangchen, grgustaf, sbryan, bspencer, otcuser");
@@ -25,7 +24,25 @@ static void testar_entradas()
     cout<<"\nLeitura de p1: "<<p1->para_string();
     cout<<"\nLeitura de p2: "<<p2->para_string();
     cout<<"\nLeitura de p3: "<<p2->para_string();
+
 }
+static void testar_arquivo()
+{
+    list<projeto_software*> projetos = projeto_software::carregar_lista_do_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\projects_github_sorted_developers_info.csv");
+    
+    int i=0;
+    for (std::list<projeto_software*>::const_iterator it = projetos.begin();it != projetos.end(); ++it) 
+    {
+        cout<<"Projeto na linha "<<++i<<" :"<<(*it)->para_string();
+    }
+}
+
+static void testar_entradas()
+{
+    testar_arquivo();
+}
+
+
 int main(int argc, char** argv) {
 
     testar_entradas();
