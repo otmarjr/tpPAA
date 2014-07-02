@@ -57,6 +57,7 @@ static void testar_geracao_grafo(){
     {
         colecao_projetos_software projetos = projeto_software::carregar_lista_do_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\projects_github_sorted_developers_info.csv");
         list<string> stop_words = helpers::carregar_linhas_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\glasgow-modified-stop-words-list.txt");
+        
         grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words);
     }
     catch(runtime_error re)

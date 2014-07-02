@@ -21,7 +21,7 @@ public:
     grafo(list<vertice*> verticess);
     
     // A partir da coleção de projetos de software carregada em memória, transforma-os em um grafo.
-    static grafo* construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software projetos, list<string> &stop_words); 
+    static grafo* construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words); 
 private:
     list<vertice*> V;
 };

@@ -7,16 +7,21 @@
 
 #include "grafo.h"
 #include "helpers.h"
+#include <iostream>
 
 grafo::grafo(list<vertice*> vertices) {
     this->V = vertices;
 }
 
-grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software projetos, list<string> &stop_words) {
+grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words) {
     list<vertice*> vertices;
     
+    cout<<"Primeiro projeto: "<<projetos[34707]->para_string();
+    
     for (map<int, projeto_software*>::const_iterator it = projetos.begin(); it != projetos.end(); ++it) {
-        vertices.push_back(new vertice((*it->second).identificador()));
+        projeto_software *p = it->second;
+        cout << p->para_string();
+        vertices.push_back(new vertice(p->identificador()));
     }
     
     for (list<vertice*>::const_iterator i = vertices.begin(); i != vertices.end(); ++i) {
