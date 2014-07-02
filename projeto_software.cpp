@@ -100,22 +100,13 @@ string projeto_software::para_string() const {
 colecao_projetos_software projeto_software::carregar_lista_do_arquivo(string caminho_arquivo_info_projetos) {
     colecao_projetos_software m;
 
-    string linha;
-    ifstream arquivo(caminho_arquivo_info_projetos.c_str());
-
-    if (arquivo.is_open()) {
-        while (getline(arquivo, linha)) {
-            projeto_software *p = new projeto_software(linha);
-            m[p->identificador()] = p;
-        }
-        arquivo.close();
-    } else {
-        stringstream buffer_mensagem;
-        buffer_mensagem << "Não foi possível abrir o arquivo '" << caminho_arquivo_info_projetos << "' com detalhes dos projetos de software para análise. Verifique se o caminho do arquivo foi digitado corretamente e se você tem permissão de leitura do arquivo.";
-
-        helpers::levantar_erro_execucao(buffer_mensagem.str());
+    list<string> linhas_arquivo = helpers::carregar_linhas_arquivo(caminho_arquivo_info_projetos);
+    
+    for (list<string>::iterator i=linhas_arquivo.begin();i!= linhas_arquivo.end();++i){
+        projeto_software *p = new projeto_software(*i);
+        m[p->identificador()] = p;
     }
-
+    
     return m;
 }
 
@@ -145,7 +136,8 @@ const list<string>& projeto_software::membros() const {
     return this->logins_membros;
 }
 
-int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software& outro_projeto, list<string> stop_words) const {
+
+int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words) const {
     int similaridade = 0;
 
 
@@ -161,20 +153,36 @@ int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_sof
     }
 
 
-    list<string> palavras_chave_outro_projeto = outro_projeto.palavras_significativas_na_descricao(stop_words);
+    list<string> palavras_chave_outro_projeto;// = outro_projeto.palavras_significativas_na_descricao(stop_words);
     list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
 
+    if (helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto) >= 5){
+        similaridade++;
+    }
+    
+    list<string> membros_outro_projeto = outro_projeto.membros();
+    list<string> membros_este_projeto = this->membros();
+    
+    if (helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto) >= 1){
+        similaridade++;
+    }
+    
     return similaridade;
 }
 
-list<string> projeto_software::palavras_significativas_na_descricao(list<string> stop_words) const {
-    list<string> palavras_descricao;
+list<string> projeto_software::palavras_significativas_na_descricao(list<string> &stop_words) const {
+    list<string> palavras_significativas;
 
     istringstream iss(this->descricao_projeto);
     string palavra_descricao;
 
+    stop_words.sort();
+    
     while (iss >> palavra_descricao) {
+        if(!binary_search(stop_words.begin(), stop_words.end(), palavra_descricao)){
+            palavras_significativas.push_back(palavra_descricao);
+        }
     }
 
-    return palavras_descricao;
+    return palavras_significativas;
 }

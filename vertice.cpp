@@ -27,17 +27,17 @@ string vertice::para_string()
     
     return oss.str();
 }
-void vertice::conectar_a_outro_vertice(vertice* y, int peso_aresta) {
-    aresta* a = new aresta(this, y, peso_aresta);
-    this->adjacencia[y->identificador()] = a;
+void vertice::conectar_a_outro_vertice(vertice &y, int peso_aresta) {
+    aresta* a = new aresta(*this, y, peso_aresta);
+    this->adjacencia[y.identificador()] = a;
 
-    if (!y->adjacente_a(this)){
-        y->conectar_a_outro_vertice(this,peso_aresta);
+    if (!y.adjacente_a(*this)){
+        y.conectar_a_outro_vertice(*this,peso_aresta);
     }
 }
 
-bool vertice::adjacente_a(vertice* outro){
+bool vertice::adjacente_a(vertice &outro){
     
-    return this->adjacencia.find(outro->id) != this->adjacencia.end();
+    return this->adjacencia.find(outro.id) != this->adjacencia.end();
 }
 

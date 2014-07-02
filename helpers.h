@@ -17,9 +17,10 @@ public:
     static string& trim_string_a_esquerda(string &texto);
     static string& normalizar_string_para_minusculas(string& texto); //util para comparacoes de texto.
     static bool strings_sao_equivalentes(string& x, string& y);
-    static int contar_numero_palavras_em_comum(list<string> &A, list<string> &B);
+    static int contar_numero_strings_em_comum(list<string> &A,
+    list<string> &B);
     static void levantar_erro_execucao(string mensagem);
-
+    static list<string> carregar_linhas_arquivo(string caminho_arquivo);
 };
 
 #endif	/* HELPERS_H */

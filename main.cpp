@@ -6,6 +6,8 @@
  */
 
 #include "projeto_software.h"
+#include "grafo.h"
+#include "helpers.h"
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
@@ -50,10 +52,22 @@ static void testar_entradas()
     testar_arquivo();
 }
 
+static void testar_geracao_grafo(){
+    try
+    {
+        colecao_projetos_software projetos = projeto_software::carregar_lista_do_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\projects_github_sorted_developers_info.csv");
+        list<string> stop_words = helpers::carregar_linhas_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\glasgow-modified-stop-words-list.txt");
+        grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words);
+    }
+    catch(runtime_error re)
+    {
+        cout<<"\nOcorreu um erro ao tentar gerar o grafo correspondente ao arquivo informado. Mensagem de erro: "<<re.what();
+    }
+}
 
 int main(int argc, char** argv) {
 
-    testar_entradas();
+    testar_geracao_grafo();
     return 0;
 }
 

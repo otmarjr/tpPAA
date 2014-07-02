@@ -14,7 +14,7 @@
 using namespace std;
 class aresta {
 public:
-    aresta(vertice* x, vertice*y, int peso);
+    aresta(vertice &x, vertice &y, int peso);
     int peso();
     string para_string();
 private:

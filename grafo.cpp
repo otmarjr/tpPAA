@@ -12,7 +12,7 @@ grafo::grafo(list<vertice*> vertices) {
     this->V = vertices;
 }
 
-grafo* grafo::construir_a_partir_colecao_projetos(map<int, projeto_software*> projetos) {
+grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software projetos, list<string> &stop_words) {
     list<vertice*> vertices;
     
     for (map<int, projeto_software*>::const_iterator it = projetos.begin(); it != projetos.end(); ++it) {
@@ -29,13 +29,10 @@ grafo* grafo::construir_a_partir_colecao_projetos(map<int, projeto_software*> pr
             vertice* y = (*j);
             projeto_software *proj_y = projetos[y->identificador()];
             
-            int peso_i_j=0;
-            
-            
-            
+            int peso_i_j = proj_x->calcular_similiaridade_com_outro_projeto(*proj_y, stop_words);
             
             if (peso_i_j >0){
-                x->conectar_a_outro_vertice(y,peso_i_j);
+                x->conectar_a_outro_vertice(*y,peso_i_j);
             }
         }
     }

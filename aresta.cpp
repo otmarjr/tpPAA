@@ -8,9 +8,9 @@
 #include "aresta.h"
 #include <sstream>
 
-aresta::aresta(vertice* x, vertice* y, int peso) {
-    this->vertices_extremidades.first = x;
-    this->vertices_extremidades.second = y;
+aresta::aresta(vertice &x, vertice &y, int peso) {
+    this->vertices_extremidades.first = &x;
+    this->vertices_extremidades.second = &y;
     this->valor_conexao = peso;
 }
 

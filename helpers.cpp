@@ -11,7 +11,10 @@
 #include <string>
 #include <list>
 #include <vector>
-
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <sstream>
 using namespace std;
 
 std::string &helpers::trim_string_a_esquerda(std::string &s) 
@@ -46,7 +49,7 @@ bool helpers::strings_sao_equivalentes(string& x, string& y) {
     return normalizar_string_para_minusculas(x).compare(normalizar_string_para_minusculas(y)) == 0;
 }
 
-int helpers::contar_numero_palavras_em_comum(list<string> &A, list<string> &B) {
+int helpers::contar_numero_strings_em_comum(list<string> &A, list<string> &B) {
     vector<string> palavras_comuns;
     
     A.sort();
@@ -57,3 +60,22 @@ int helpers::contar_numero_palavras_em_comum(list<string> &A, list<string> &B) {
     return palavras_comuns.size();
 }
 
+list<string> helpers::carregar_linhas_arquivo(string carminho_arquivo) {
+    string linha;
+    ifstream arquivo(carminho_arquivo.c_str());
+    list<string> lista;
+    
+    if (arquivo.is_open()) {
+        while (getline(arquivo, linha)) {
+            lista.push_back(linha);
+        }
+        arquivo.close();
+    } else {
+        stringstream buffer_mensagem;
+        buffer_mensagem << "Não foi possível abrir o arquivo '" << carminho_arquivo << "'.  Verifique se o caminho do arquivo foi digitado corretamente e se você tem permissão de leitura do arquivo.";
+
+        helpers::levantar_erro_execucao(buffer_mensagem.str());
+    }
+    
+    return lista;
+}
