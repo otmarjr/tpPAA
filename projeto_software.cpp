@@ -16,120 +16,165 @@
 #include "helpers.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
+using namespace std;
 
-projeto_software::projeto_software(string linha_info_projetos)
-{
+projeto_software::projeto_software(string linha_info_projetos) {
     stringstream stream_dados_projeto(linha_info_projetos);
     string campo_arquivo;
 
     // Cada linha do arquivo tem o formato: <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>
     const char DELIMITADOR_CAMPOS_ARQUIVO = '|';
-    
+
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
     istringstream ss(campo_arquivo);
     ss >> this->id;
-    
+
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
-    this->linguagem_programacao = campo_arquivo;
-    
+    this->linguagem = campo_arquivo;
+
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
     this->descricao_projeto = campo_arquivo;
-    
+
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
     // data no formato: AAAA-MM-DD HH:MM:SS
     const string MASCARA_DATA_HORA_ARQUIVO = "AAAA-MM-DD HH:MM:SS";
 
     campo_arquivo = helpers::trim_string(campo_arquivo);
-       
-    if (!campo_arquivo.empty() && campo_arquivo.length() == MASCARA_DATA_HORA_ARQUIVO.length())
-    {
+
+    if (!campo_arquivo.empty() && campo_arquivo.length() == MASCARA_DATA_HORA_ARQUIVO.length()) {
         time_t hora_corrente;
         time(&hora_corrente);
-        
+
         tm momento_ultimo_commit;
         const char* formato_parse = "%Y-%m-%d %H:%M:%S";
         strptime(campo_arquivo.c_str(), formato_parse, &momento_ultimo_commit);
         time_t momento_commit = mktime(&momento_ultimo_commit);
-        
-        
-        const double TOTAL_SEGUNDOS_EM_UM_ANO = 60*60*24*365;
+
+
+        const double TOTAL_SEGUNDOS_EM_UM_ANO = 60 * 60 * 24 * 365;
         double segundos_decorridos_desde_ultimo_commit = difftime(hora_corrente, momento_commit);
-        
+
         this->ultimo_commit_menos_um_ano = segundos_decorridos_desde_ultimo_commit <= TOTAL_SEGUNDOS_EM_UM_ANO;
-    }
-    else
-    {
+    } else {
         this->ultimo_commit_menos_um_ano = false;
     }
-            
+
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
-    
+
     campo_arquivo = helpers::trim_string(campo_arquivo);
-    
-    if (!campo_arquivo.empty())
-    {
-        const char DELIMITADOR_LISTA_MEMBROS_PROJETO = ',';    
+
+    if (!campo_arquivo.empty()) {
+        const char DELIMITADOR_LISTA_MEMBROS_PROJETO = ',';
         // A lista de membros do projeto é o último campo com os logins separados por vírgula
         stringstream stream_membros(campo_arquivo);
-        
+
         string login;
-        
-        while (!stream_membros.eof())
-        {
+
+        while (!stream_membros.eof()) {
             getline(stream_membros, login, DELIMITADOR_LISTA_MEMBROS_PROJETO);
             this->logins_membros.push_back(login);
         }
     }
 }
 
-string projeto_software::para_string()
-{
+string projeto_software::para_string() const {
     string infos_projeto;
-    
+
     ostringstream formatador;
-    
-    formatador<<"Id: "<<this->id;
-    formatador<<" Linguagem_programacao: "<<this->linguagem_programacao;
-    formatador<<" Descrição: "<<this->descricao_projeto;
-    formatador<<" Ultimo commit há menos de um ano?: "<<this->ultimo_commit_menos_um_ano;
-    
+
+    formatador << "Id: " << this->id;
+    formatador << " Linguagem_programacao: " << this->linguagem;
+    formatador << " Descrição: " << this->descricao_projeto;
+    formatador << " Ultimo commit há menos de um ano?: " << this->ultimo_commit_menos_um_ano;
+
     ostringstream formatador_membros;
     string buffer_login;
-    copy(this->logins_membros.begin(), this->logins_membros.end(), ostream_iterator<string>(formatador_membros,","));
-    formatador<<" Membros: "<<formatador_membros.str();
-    
+    copy(this->logins_membros.begin(), this->logins_membros.end(), ostream_iterator<string>(formatador_membros, ","));
+    formatador << " Membros: " << formatador_membros.str();
+
     return formatador.str();
 }
 
+colecao_projetos_software projeto_software::carregar_lista_do_arquivo(string caminho_arquivo_info_projetos) {
+    colecao_projetos_software m;
 
-list<projeto_software*> projeto_software::carregar_lista_do_arquivo(string caminho_arquivo_info_projetos)
-{
-    list<projeto_software*> l;
-    
     string linha;
     ifstream arquivo(caminho_arquivo_info_projetos.c_str());
 
     if (arquivo.is_open()) {
-        while (getline(arquivo, linha)) 
-        {
-            l.push_back(new projeto_software(linha));
+        while (getline(arquivo, linha)) {
+            projeto_software *p = new projeto_software(linha);
+            m[p->identificador()] = p;
         }
         arquivo.close();
     } else {
         stringstream buffer_mensagem;
-        buffer_mensagem<<"Não foi possível abrir o arquivo '"<<caminho_arquivo_info_projetos<<"' com detalhes dos projetos de software para análise. Verifique se o processo corrente tem permissão de acesso ao mesmo.";
-        
+        buffer_mensagem << "Não foi possível abrir o arquivo '" << caminho_arquivo_info_projetos << "' com detalhes dos projetos de software para análise. Verifique se o caminho do arquivo foi digitado corretamente e se você tem permissão de leitura do arquivo.";
+
         helpers::levantar_erro_execucao(buffer_mensagem.str());
     }
-    
-    return l;
+
+    return m;
 }
 
-void projeto_software::desalocar_lista_projeto_software(list<projeto_software*> lista)
-{
-    while (!lista.empty())
-    {
+void projeto_software::desalocar_lista_projeto_software(list<projeto_software*> lista) {
+    while (!lista.empty()) {
         delete lista.front(), lista.pop_front();
     }
+}
+
+int projeto_software::identificador() const {
+    return this->id;
+}
+
+string projeto_software::linguagem_programacao() const {
+    return this->linguagem;
+}
+
+string projeto_software::descricao() const {
+    return this->descricao_projeto;
+}
+
+bool projeto_software::modificado_ultimo_ano() const {
+    return this->ultimo_commit_menos_um_ano;
+}
+
+const list<string>& projeto_software::membros() const {
+    return this->logins_membros;
+}
+
+int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software& outro_projeto, list<string> stop_words) const {
+    int similaridade = 0;
+
+
+    string lp_outro_projeto = outro_projeto.linguagem;
+    string lp_este_projeto = this->linguagem;
+
+    if (helpers::strings_sao_equivalentes(lp_outro_projeto, lp_este_projeto)) {
+        similaridade;
+    }
+
+    if (outro_projeto.ultimo_commit_menos_um_ano == this->ultimo_commit_menos_um_ano) {
+        similaridade++;
+    }
+
+
+    list<string> palavras_chave_outro_projeto = outro_projeto.palavras_significativas_na_descricao(stop_words);
+    list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
+
+    return similaridade;
+}
+
+list<string> projeto_software::palavras_significativas_na_descricao(list<string> stop_words) const {
+    list<string> palavras_descricao;
+
+    istringstream iss(this->descricao_projeto);
+    string palavra_descricao;
+
+    while (iss >> palavra_descricao) {
+    }
+
+    return palavras_descricao;
 }

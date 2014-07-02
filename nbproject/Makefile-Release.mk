@@ -35,10 +35,12 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/gerador_grafo.o \
+	${OBJECTDIR}/aresta.o \
+	${OBJECTDIR}/grafo.o \
 	${OBJECTDIR}/helpers.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/projeto_software.o
+	${OBJECTDIR}/projeto_software.o \
+	${OBJECTDIR}/vertice.o
 
 
 # C Compiler Flags
@@ -65,10 +67,15 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tppaa.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tppaa ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/gerador_grafo.o: gerador_grafo.cpp 
+${OBJECTDIR}/aresta.o: aresta.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/gerador_grafo.o gerador_grafo.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aresta.o aresta.cpp
+
+${OBJECTDIR}/grafo.o: grafo.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/grafo.o grafo.cpp
 
 ${OBJECTDIR}/helpers.o: helpers.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -84,6 +91,11 @@ ${OBJECTDIR}/projeto_software.o: projeto_software.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software.o projeto_software.cpp
+
+${OBJECTDIR}/vertice.o: vertice.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/vertice.o vertice.cpp
 
 # Subprojects
 .build-subprojects:

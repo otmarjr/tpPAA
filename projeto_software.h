@@ -10,21 +10,32 @@
 
 #include <string>
 #include <list>
+#include <map>
 
 using namespace std;
+class projeto_software;
+
+typedef map<int, projeto_software*> colecao_projetos_software;
 
 class projeto_software {
 public:
-    static list<projeto_software*> carregar_lista_do_arquivo(string caminho_arquivo_info_projetos);
+    static colecao_projetos_software carregar_lista_do_arquivo(string caminho_arquivo_info_projetos);
     projeto_software(string linha_info_projetos);
-    string para_string(); // Utilizada para depurar defeitos.
+    string para_string() const; // Utilizada para depurar defeitos.
     static void desalocar_lista_projeto_software(list<projeto_software*> lista);
+    int identificador() const;
+    string linguagem_programacao() const;
+    string descricao() const;
+    bool modificado_ultimo_ano() const;
+    const list<string>& membros() const;
+    int calcular_similiaridade_com_outro_projeto(const projeto_software& outro_projeto, list<string> stop_words) const;
 private:
     int id;
-    string linguagem_programacao;
+    string linguagem;
     string descricao_projeto;
     bool ultimo_commit_menos_um_ano;
     list<string> logins_membros;
+    list<string> palavras_significativas_na_descricao(list<string> stop_words) const;
     
 };
 

@@ -8,6 +8,7 @@
 #include "projeto_software.h"
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -28,12 +29,19 @@ static void testar_linhas()
 }
 static void testar_arquivo()
 {
-    list<projeto_software*> projetos = projeto_software::carregar_lista_do_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\projects_github_sorted_developers_info.csv");
-    
-    int i=0;
-    for (std::list<projeto_software*>::const_iterator it = projetos.begin();it != projetos.end(); ++it) 
+    try
     {
-        cout<<"Projeto na linha "<<++i<<" :"<<(*it)->para_string();
+        colecao_projetos_software projetos = projeto_software::carregar_lista_do_arquivo("C:\\Users\\Otmar\\Google Drive\\Mestrado\\PAA\\TP1\\massa-testes\\projects_github_sorted_developers_info.csv");
+
+        int i=0;
+        for (colecao_projetos_software::const_iterator it = projetos.begin();it != projetos.end(); ++it) 
+        {
+            cout<<"Projeto na linha "<<++i<<" :"<<(*it->second).para_string();
+        }
+    }
+    catch(runtime_error re)
+    {
+        cout<<"\nOcorreu um erro ao tentar gerar o grafo correspondente ao arquivo informado. Mensagem de erro: "<<re.what();
     }
 }
 

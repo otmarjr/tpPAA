@@ -4,7 +4,17 @@
         <activeConfTypeElem>1</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/gerador_grafo.cpp</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/main.cpp</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/projeto_software.cpp</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/helpers.cpp</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/membro_projeto_software.cpp</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/projeto_software.h</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/gerador_grafo.h</file>
+            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/helpers.h</file>
+        </group>
     </open-files>
 </project-private>
