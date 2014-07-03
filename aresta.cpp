@@ -29,4 +29,14 @@ string aresta::para_string()
     
     return oss.str();
 }
+
+vertice& aresta::obter_vertice_da_outra_extremidade(const vertice &x) const {
+    if (&x == this->vertices_extremidades.first){
+        return *(this->vertices_extremidades.second);
+    }
+    else{
+        return *(this->vertices_extremidades.first);
+    }
+        
+}
         

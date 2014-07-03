@@ -27,8 +27,13 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e ""</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\projects_github_sorted_developers_info_mini_2000.csv" -s ""</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\projects_github_sorted_developers_info_mini_2000.csv" -s "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\grafo_2000.csv"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\projects_github_sorted_developers_info_mini_2000.csv" -s "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\grafo_2000.csv" -w </runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\projects_github_sorted_developers_info_mini_2000.csv" -s "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\grafo_2000.csv" -w "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -g -e "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\projects_github_sorted_developers_info_mini_2000.csv" -s "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\grafo_2000.csv" -w "C:\Users\Otmar\Google Drive\Mestrado\PAA\TP1\massa-testes\glasgow-modified-stop-words-list.txt"</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

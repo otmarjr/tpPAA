@@ -64,9 +64,7 @@ list<string> helpers::carregar_linhas_arquivo(string carminho_arquivo) {
     if (arquivo.is_open()) {
         while (getline(arquivo, linha)) {
             // Remove o \r que pode ficar ao final, conforme o SO de origem do arquivo:
-            if (!linha.empty() && linha[linha.size()-1] == '\r'){
-                linha.erase(linha.size()-1);
-            }
+            helpers::retirar_ultimo_caractere_se_presente(linha,'\r');
             lista.push_back(linha);
         }
         arquivo.close();
@@ -89,4 +87,11 @@ bool helpers::string_is_int(string texto) {
     strtol(texto.c_str(), &p, 10);
 
     return (*p == 0);
+}
+
+string& helpers::retirar_ultimo_caractere_se_presente(string& texto, char caractere) {
+    if (!texto.empty() && texto[texto.size() - 1] == caractere) {
+        texto.erase(texto.size() - 1);
+    }
+    return texto;
 }
