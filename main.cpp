@@ -36,6 +36,9 @@ typedef struct {
 parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv) {
     parametros_execucao_programa params;
 
+    params.gerar_clusters = false;
+    params.gerar_grafo = false;
+    
     // Processa os argumentos de entrada do programa que seguem um dos formatos:
     // ./tpPAA -[g,c] -e <ARQUIVO_ENTRADA> -s <ARQUIVO_SAIDA> -w
 

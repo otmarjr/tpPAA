@@ -10,9 +10,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 grafo::grafo(list<vertice*> vertices) {
-    this->V = vertices;
+    copy(vertices.begin(),vertices.end(), back_inserter(this->V));
 }
 
 grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words) {
@@ -43,6 +44,8 @@ grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_
             }
         }
     }
+    
+    return new grafo(vertices);
 }
 
 void grafo::salvar_representacao_lista_adjacencia_em_arquivo(string caminho_arquivo) {
@@ -56,6 +59,8 @@ void grafo::salvar_representacao_lista_adjacencia_em_arquivo(string caminho_arqu
         helpers::levantar_erro_execucao(oss.str());
     } else {
         
+        int tamanho = this->V.size();
+        
         for (list<vertice*>::iterator i=this->V.begin();i!=this->V.end();++i){
             vertice *v = *i;
             f_saida<<v->para_string()<<std::endl;
@@ -63,7 +68,7 @@ void grafo::salvar_representacao_lista_adjacencia_em_arquivo(string caminho_arqu
 
         f_saida.close();
         
-        if (!f_saida.good() || !f_saida.is_open()){
+        if (!f_saida.good()){
             ostringstream oss;
             oss << "Ocorreu um erro durante a escrita do arquivo de saída do grafo no caminho '" << caminho_arquivo << "'. Verifique se você tem permissão de escrita no caminho informado.";
             helpers::levantar_erro_execucao(oss.str());
