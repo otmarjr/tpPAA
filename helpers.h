@@ -21,6 +21,7 @@ public:
     list<string> &B);
     static void levantar_erro_execucao(string mensagem);
     static list<string> carregar_linhas_arquivo(string caminho_arquivo);
+    static bool string_is_int(string texto);
 };
 
 #endif	/* HELPERS_H */

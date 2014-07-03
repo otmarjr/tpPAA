@@ -76,6 +76,17 @@ list<string> helpers::carregar_linhas_arquivo(string carminho_arquivo) {
 
         helpers::levantar_erro_execucao(buffer_mensagem.str());
     }
-    
     return lista;
+}
+
+bool helpers::string_is_int(string texto) {
+    
+    if(texto.empty() || ((!isdigit(texto[0])) && (texto[0] != '-') && (texto[0] != '+'))){
+        return false ;
+    }
+    
+   char * p ;
+   strtol(texto.c_str(), &p, 10) ;
+
+   return (*p == 0) ;
 }

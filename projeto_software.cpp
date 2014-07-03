@@ -17,7 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-
+#include<list>
 using namespace std;
 
 projeto_software::projeto_software(string linha_info_projetos) {
@@ -26,8 +26,20 @@ projeto_software::projeto_software(string linha_info_projetos) {
 
     // Cada linha do arquivo tem o formato: <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>
     const char DELIMITADOR_CAMPOS_ARQUIVO = '|';
+    const int TOTAL_CAMPOS_ARQUIVO  = 5;
+    int total_campos_linha = count(linha_info_projetos.begin(), linha_info_projetos.end(), DELIMITADOR_CAMPOS_ARQUIVO) +1;
+    if ( total_campos_linha != TOTAL_CAMPOS_ARQUIVO) {
+        string erro = "Foi recebida uma linha fora do formato de conversão, que é <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>.";;
+        throw erro;
+    }
 
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
+
+    if (!helpers::string_is_int(campo_arquivo)) {
+        string erro = "O campo <ID> recebido não é um inteiro válido.";
+        throw erro;
+    }
+
     istringstream ss(campo_arquivo);
     ss >> this->id;
 
@@ -101,12 +113,21 @@ colecao_projetos_software projeto_software::carregar_lista_do_arquivo(string cam
     colecao_projetos_software m;
 
     list<string> linhas_arquivo = helpers::carregar_linhas_arquivo(caminho_arquivo_info_projetos);
-    
-    for (list<string>::iterator i=linhas_arquivo.begin();i!= linhas_arquivo.end();++i){
-        projeto_software *p = new projeto_software(*i);
-        m[p->identificador()] = p;
+
+    int indice_linha = 1;
+
+    for (list<string>::iterator i = linhas_arquivo.begin(); i != linhas_arquivo.end(); ++i) {
+        try {
+            projeto_software *p = new projeto_software(*i);
+            m[p->identificador()] = p;
+        } catch (string mensagem_erro_construtor) {
+            ostringstream oss;
+            oss << "Ocorreu o seguinte erro ao tentar ler a linha " << indice_linha << " do arquivo. Erro: " << mensagem_erro_construtor << " Linha lida: " << *i;
+            helpers::levantar_erro_execucao(oss.str());
+        }
+        indice_linha++;
     }
-    
+
     return m;
 }
 
@@ -136,7 +157,6 @@ const list<string>& projeto_software::membros() const {
     return this->logins_membros;
 }
 
-
 int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words) const {
     int similaridade = 0;
 
@@ -153,20 +173,20 @@ int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_sof
     }
 
 
-    list<string> palavras_chave_outro_projeto;// = outro_projeto.palavras_significativas_na_descricao(stop_words);
+    list<string> palavras_chave_outro_projeto; // = outro_projeto.palavras_significativas_na_descricao(stop_words);
     list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
 
-    if (helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto) >= 5){
+    if (helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto) >= 5) {
         similaridade++;
     }
-    
+
     list<string> membros_outro_projeto = outro_projeto.membros();
     list<string> membros_este_projeto = this->membros();
-    
-    if (helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto) >= 1){
+
+    if (helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto) >= 1) {
         similaridade++;
     }
-    
+
     return similaridade;
 }
 
@@ -177,12 +197,13 @@ list<string> projeto_software::palavras_significativas_na_descricao(list<string>
     string palavra_descricao;
 
     stop_words.sort();
-    
+
     while (iss >> palavra_descricao) {
-        if(!binary_search(stop_words.begin(), stop_words.end(), palavra_descricao)){
+        if (!binary_search(stop_words.begin(), stop_words.end(), palavra_descricao)) {
             palavras_significativas.push_back(palavra_descricao);
         }
     }
 
     return palavras_significativas;
 }
+

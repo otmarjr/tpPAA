@@ -7,10 +7,12 @@
 
 #include "vertice.h"
 #include "aresta.h"
+#include "helpers.h"
 #include <algorithm>
 #include <sstream>
 
 vertice::vertice(int id) {
+    if (id <= 0) helpers::levantar_erro_execucao("Identificador inválido.");
     this->id = id;
 }
 

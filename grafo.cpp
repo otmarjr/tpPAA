@@ -16,17 +16,22 @@ grafo::grafo(list<vertice*> vertices) {
 grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words) {
     list<vertice*> vertices;
     
-    cout<<"Primeiro projeto: "<<projetos[34707]->para_string();
-    
     for (map<int, projeto_software*>::const_iterator it = projetos.begin(); it != projetos.end(); ++it) {
-        projeto_software *p = it->second;
-        cout << p->para_string();
-        vertices.push_back(new vertice(p->identificador()));
+        projeto_software *p = projetos[it->first];
+        int id = p->identificador();
+        int id2 = it->first;
+        projeto_software *p3 = it->second;
+        int id3 = p3->identificador();
+        vertices.push_back(new vertice(id));
     }
     
     for (list<vertice*>::const_iterator i = vertices.begin(); i != vertices.end(); ++i) {
+        int id = (*i)->identificador();
+        
         vertice* x = (*i);
+        cout<<"ID: "<<x->identificador();
         projeto_software *proj_x = projetos[x->identificador()];
+        
         list<vertice*>::const_iterator j = i;
         
         

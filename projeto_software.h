@@ -36,7 +36,6 @@ private:
     bool ultimo_commit_menos_um_ano;
     list<string> logins_membros;
     list<string> palavras_significativas_na_descricao(list<string> &stop_words) const;
-    
 };
 
 #endif	/* PROJETO_SOFTWARE_H */
