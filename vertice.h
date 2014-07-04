@@ -21,7 +21,7 @@ public:
     vertice(int id);
     string para_string();
     void conectar_a_outro_vertice(vertice &y, int peso_aresta);
-    const list<aresta*>& lista_adjacencia() const;
+    list<aresta*> lista_adjacencia() const;
     bool adjacente_a(vertice &outro);
     
 private:

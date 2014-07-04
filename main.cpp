@@ -122,7 +122,7 @@ static void gerar_grafo(parametros_execucao_programa &params) {
     list<string> stop_words = helpers::carregar_linhas_arquivo(params.caminho_arquivo_stop_words);
 
     grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words);
-    g->salvar_representacao_lista_adjacencia_em_arquivo(params.caminho_arquivo_saida);
+    g->salvar_formato_pajek(params.caminho_arquivo_saida);
     cout<<"Grafo gerado com sucesso e salvo em "<<params.caminho_arquivo_saida;
 }
 

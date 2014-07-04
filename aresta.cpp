@@ -15,7 +15,8 @@ aresta::aresta(vertice &x, vertice &y, int peso) {
 }
 
 int aresta::peso() {
-    return this->valor_conexao;
+    int peso = this->valor_conexao;
+    return peso;
 }
 
 // Representa esta aresa {x,y} com peso p no formato [{x,y},p]

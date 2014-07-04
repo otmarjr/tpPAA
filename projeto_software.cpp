@@ -177,17 +177,13 @@ int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_sof
     list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
 
     int numero_palavras_em_comum_na_descricao = helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto);
-    if ( numero_palavras_em_comum_na_descricao >= 5) {
-        similaridade++;
-    }
-
+    similaridade += numero_palavras_em_comum_na_descricao;
+    
     list<string> membros_outro_projeto = outro_projeto.membros();
     list<string> membros_este_projeto = this->membros();
 
     int numero_membros_em_comum_projeto = helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto);
-    if ( numero_membros_em_comum_projeto >= 1) {
-        similaridade++;
-    }
+    similaridade += numero_membros_em_comum_projeto;
 
     return similaridade;
 }
