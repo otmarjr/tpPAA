@@ -11,7 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-
+#include <tr1/regex>
 grafo::grafo(list<vertice*> vertices) {
     copy(vertices.begin(),vertices.end(), back_inserter(this->V));
 }
@@ -48,7 +48,7 @@ grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_
     return new grafo(vertices);
 }
 
-void grafo::salvar_formato_pajek(string caminho_arquivo) {
+void grafo::salvar_em_formato_pajek(string caminho_arquivo) {
 
     ofstream f_saida(caminho_arquivo.c_str());
 
@@ -102,4 +102,50 @@ void grafo::salvar_formato_pajek(string caminho_arquivo) {
             helpers::levantar_erro_execucao(oss.str());
         }
     }
+}
+
+grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) {
+    
+    list<string> linhas_arquivo = helpers::carregar_linhas_arquivo(caminho_arquivo_pajek);
+    
+    list<string>::iterator i = linhas_arquivo.begin();
+    istringstream iss(*i);
+
+    string string_atual_arquivo;
+    iss >> string_atual_arquivo; // Ignora a parte da 1a linha, que possui apenas o texto *Vertices
+    
+    int quantidade_vertices;
+    iss >> quantidade_vertices; 
+    
+    list<vertice*> l;
+    
+    for (++i;distance(linhas_arquivo.begin(),i)<=quantidade_vertices;++i){
+        stringstream ss(*i);
+        
+        ss>>string_atual_arquivo; // Id no pajek
+        ss>>string_atual_arquivo; // aspas duplas
+        ss>>string_atual_arquivo; // id do projeto de software.
+        ss>>string_atual_arquivo; // id do projeto de software.
+        ss>>string_atual_arquivo; // id do projeto de software.
+        
+        
+        l.push_back(new vertice(helpers::string_para_inteiro(string_atual_arquivo)));
+    }
+    
+    
+    return NULL;
+}
+
+void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
+    list<string> linhas_arquivo = helpers::carregar_linhas_arquivo(caminho_arquivo_clusters);
+    list<vertice*> v;
+    
+    list<string>::iterator i = linhas_arquivo.begin();
+    istringstream iss(*i);
+
+    string linha;
+    
+    iss >> linha; 
+    
+    string lol2 = linha;
 }

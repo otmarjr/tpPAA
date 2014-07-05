@@ -35,7 +35,7 @@ projeto_software::projeto_software(string linha_info_projetos) {
 
     getline(stream_dados_projeto, campo_arquivo, DELIMITADOR_CAMPOS_ARQUIVO);
 
-    if (!helpers::string_is_int(campo_arquivo)) {
+    if (!helpers::string_e_inteiro(campo_arquivo)) {
         string erro = "O campo <ID> recebido não é um inteiro válido.";
         throw erro;
     }

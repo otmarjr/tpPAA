@@ -77,7 +77,7 @@ list<string> helpers::carregar_linhas_arquivo(string carminho_arquivo) {
     return lista;
 }
 
-bool helpers::string_is_int(string texto) {
+bool helpers::string_e_inteiro(string texto) {
 
     if (texto.empty() || ((!isdigit(texto[0])) && (texto[0] != '-') && (texto[0] != '+'))) {
         return false;
@@ -94,4 +94,11 @@ string& helpers::retirar_ultimo_caractere_se_presente(string& texto, char caract
         texto.erase(texto.size() - 1);
     }
     return texto;
+}
+
+int helpers::string_para_inteiro(string& texto) {
+    istringstream iss(texto);
+    int valor_inteiro;
+    iss>>valor_inteiro;
+    return valor_inteiro;
 }

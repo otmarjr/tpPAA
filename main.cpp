@@ -22,6 +22,7 @@ typedef struct {
     string caminho_arquivo_saida;
     bool gerar_clusters;
     string caminho_arquivo_stop_words;
+    int quantidade_clusters;
 } parametros_execucao_programa;
 
 typedef struct {
@@ -38,13 +39,16 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
 
     params.gerar_clusters = false;
     params.gerar_grafo = false;
-    
+    params.quantidade_clusters = 0;
+
     // Processa os argumentos de entrada do programa que seguem um dos formatos:
     // ./tpPAA -[g,c] -e <ARQUIVO_ENTRADA> -s <ARQUIVO_SAIDA> -w
 
     char opcao;
 
-    while ((opcao = getopt(argc, argv, "gce:s:w:")) != -1) {
+    while ((opcao = getopt(argc, argv, "gce:s:w:q:")) != -1) {
+        string val_opt_arg;
+        
         switch (opcao) {
             case 'g':
                 params.gerar_grafo = true;
@@ -60,6 +64,12 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
                 break;
             case 'w':
                 params.caminho_arquivo_stop_words = string(optarg);
+                break;
+            case 'q':
+                val_opt_arg = string(optarg);
+                if (helpers::string_e_inteiro(val_opt_arg)) {
+                    params.quantidade_clusters = helpers::string_para_inteiro(val_opt_arg);
+                }
                 break;
         }
     }
@@ -95,6 +105,11 @@ resultado_validacao_parametros_execucao validar_parametros_execucao(parametros_e
                 if (!arquivo_entrada_ok) {
                     r.mensagens_erro.push_back("Ocorreu um erro ao tentar verificar o arquivo de grafo informado para localização de clusters. Verifique se o caminho deste arquivo de entrada foi digitado corretamente.");
                 }
+                
+                if (params_exec.quantidade_clusters <= 0){
+                    r.mensagens_erro.push_back("Para fazer a análise de clusters é preciso informar a quantidade de clusters desejada para particionamento do grafo como um número inteiro positivo.");
+                }
+                
             } else {
 
                 r.mensagens_erro.push_back("\nEste programa tem dois modos de execução: geração de grafos ou clusters de um grafo. Você não selecionou nnehum dos 2 modos. Execute novamente o programa com o argumento -g para gerar o arquivo de grafo dos projetos de software ou -c para encontrar clusters no grafo de entrada.");
@@ -114,7 +129,7 @@ static void exibir_erros_parametros_execucao(resultado_validacao_parametros_exec
     }
 
     cout << "\nO programa possui dois modos de execução: geração de grafo e geração de clusters. Para gerar um arquivo de grafo, execute o programa como ./tpPAA -g -e <CAMINHO_ARQUIVO_INFORMACOES_PROJETOS_SOFTWARE> -s <CAMINHO_ARQUIVO_GRAFO_GERADO> -w <CAMINHO_ARQUIVO_STOP_WORDS>.";
-    cout << "\nPara gerar um arquivo com os clusters encontrados, execute o programa como ./tpPAA -c -e <CAMINHO_ARQUIVO_GRAFO_GERADO> -s <CAMINHO_ARQUIVO_CLUSTERS_ENCONTRADOS>.";
+    cout << "\nPara gerar um arquivo com os clusters encontrados, execute o programa como ./tpPAA -c -e <CAMINHO_ARQUIVO_GRAFO_GERADO> -q <QUANTIDADE_CLUSTERS_GERADOS> -s <CAMINHO_ARQUIVO_CLUSTERS_ENCONTRADOS>.";
 }
 
 static void gerar_grafo(parametros_execucao_programa &params) {
@@ -122,8 +137,14 @@ static void gerar_grafo(parametros_execucao_programa &params) {
     list<string> stop_words = helpers::carregar_linhas_arquivo(params.caminho_arquivo_stop_words);
 
     grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words);
-    g->salvar_formato_pajek(params.caminho_arquivo_saida);
-    cout<<"Grafo gerado com sucesso e salvo em "<<params.caminho_arquivo_saida;
+    g->salvar_em_formato_pajek(params.caminho_arquivo_saida);
+    cout << "Grafo gerado com sucesso e salvo em " << params.caminho_arquivo_saida;
+}
+
+static void encontrar_clusters(parametros_execucao_programa &params) {
+    grafo *g = grafo::construir_a_partir_de_arquivo_pajek(params.caminho_arquivo_entrada);
+    g->salvar_clusters_projetos_em_arquivo(params.quantidade_clusters, params.caminho_arquivo_saida);
+    cout<<" Clusters do grafo salvos com sucesso em "<< params.caminho_arquivo_saida;
 }
 
 int main(int argc, char** argv) {
@@ -142,6 +163,11 @@ int main(int argc, char** argv) {
                 cout << "\nOcorreu um erro ao tentar gerar o grafo correspondente ao arquivo informado. Mensagem de erro: " << re.what();
             }
         } else {
+            try {
+                encontrar_clusters(params);
+            } catch (runtime_error re) {
+                cout << "\nOcorreu um erro ao procurar clusters no grafo informado. Mensagem de erro: " << re.what();
+            }
 
         }
     }
