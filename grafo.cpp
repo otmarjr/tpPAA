@@ -119,21 +119,43 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
     
     list<vertice*> l;
     
+    map<int, vertice*> vertices_pajek;
+    
     for (++i;distance(linhas_arquivo.begin(),i)<=quantidade_vertices;++i){
-        stringstream ss(*i);
+        string linha = *i;
+        stringstream ss(linha);
         
-        ss>>string_atual_arquivo; // Id no pajek
-        ss>>string_atual_arquivo; // aspas duplas
-        ss>>string_atual_arquivo; // id do projeto de software.
-        ss>>string_atual_arquivo; // id do projeto de software.
-        ss>>string_atual_arquivo; // id do projeto de software.
+        int id_pajek;
+        ss>>id_pajek;
         
+        int pos = linha.find(' ')+2;
         
-        l.push_back(new vertice(helpers::string_para_inteiro(string_atual_arquivo)));
+        string id_projeto_software = linha.substr(pos, linha.size()-pos-1);
+        
+        vertice *v = new vertice(helpers::string_para_inteiro(id_projeto_software));
+        
+        vertices_pajek[id_pajek] = v;
+        l.push_back(v);
     }
     
+    for (++i;i!=linhas_arquivo.end();++i){
+        string linha = *i;
+        stringstream ss(linha);
+        int id_origem, id_destino, peso;
+        
+        ss>>id_origem;
+        vertice* x = vertices_pajek[id_origem];
+        
+        ss>>id_destino;
+        vertice* y = vertices_pajek[id_destino];
+        
+        ss>>peso;
+        x->conectar_a_outro_vertice(*y,peso);
+        
+    }
+    grafo* g = new grafo(l);
     
-    return NULL;
+    return g;
 }
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {

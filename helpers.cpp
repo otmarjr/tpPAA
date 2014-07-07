@@ -64,7 +64,8 @@ list<string> helpers::carregar_linhas_arquivo(string carminho_arquivo) {
     if (arquivo.is_open()) {
         while (getline(arquivo, linha)) {
             // Remove o \r que pode ficar ao final, conforme o SO de origem do arquivo:
-            helpers::retirar_ultimo_caractere_se_presente(linha,'\r');
+            linha = helpers::retirar_ultimo_caractere_se_presente(linha,'\r');
+            linha = helpers::retirar_ultimo_caractere_se_presente(linha,'\r');
             lista.push_back(linha);
         }
         arquivo.close();
