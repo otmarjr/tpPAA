@@ -171,6 +171,47 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
     set<cluster_vertices> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
+    
+    
+    
+    ofstream f_saida(caminho_arquivo_clusters.c_str());
+
+    if (!f_saida.good() || !f_saida.is_open()){
+        f_saida.close();
+        ostringstream oss;
+        oss << "Ocorreu um erro ao tentar abrir para escrita o arquivo de saída dos clusters no cmainho '" << caminho_arquivo_clusters << "'. Verifique se você tem permissão de escrita no caminho informado e se nehum outro processo está utilizando o arquivo.";
+        helpers::levantar_erro_execucao(oss.str());
+    } else {
+    
+        int cont_cluster=0;
+        
+        for (set<cluster_vertices>::iterator i=clusters.begin();i!=clusters.end();++i){
+            cluster_vertices c = *i;
+            cont_cluster++;
+            f_saida<<'\n'<<"Cluster "<<cont_cluster<<" - "<<c.size()<<" elementos"<<endl;
+            
+            stringstream ss;
+            
+            for (cluster_vertices::iterator j=c.begin(); j!= c.end();++j){
+                vertice *v = *j;
+                ss<<v->identificador()<<',';
+            }
+            
+            string cluster_str = ss.str();
+            cluster_str = helpers::retirar_ultimo_caractere_se_presente(cluster_str, ',');
+            
+            f_saida<<cluster_str<<endl;
+        }
+        
+        f_saida.close();
+        
+        if (!f_saida.good()){
+            ostringstream oss;
+            oss << "Ocorreu um erro durante a escrita do arquivo de saída dos clusters no caminho '" << caminho_arquivo_clusters << "'. Verifique se você tem permissão de escrita no caminho informado.";
+            helpers::levantar_erro_execucao(oss.str());
+        }
+    }
+    
 }
 
 set<cluster_vertices> grafo::gerar_kruskal_k_clusters(int k) {

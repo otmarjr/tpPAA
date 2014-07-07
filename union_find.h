@@ -26,7 +26,7 @@ public:
 private:
     int total_conjuntos;
     map<vertice*, int> componente;
-    map<vertice*, tamanho> tamanho;
+    map<vertice*, int> tamanho;
     /*
     class registro_union_find {
     public:

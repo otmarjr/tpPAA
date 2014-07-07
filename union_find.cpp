@@ -65,14 +65,14 @@ set<cluster_vertices> union_find::conjuntos_disjuntos() {
     map<int, cluster_vertices> ja_encontrados;
     
     for (map<vertice*,int>::iterator i = this->componente.begin();i!= this->componente.end();++i){
-        int id_conjunto = (*i)->second;
-        vertice *v = (*i)->first;
+        int id_conjunto = (*i).second;
+        vertice *v = (*i).first;
         
         if (ja_encontrados.find(id_conjunto) == ja_encontrados.end()){
             cluster_vertices c;
             c.insert(v);
             ja_encontrados[id_conjunto]=c;
-            s.insert(v);
+            s.insert(c);
         }
         else{
             cluster_vertices c = ja_encontrados[id_conjunto];
