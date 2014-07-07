@@ -10,10 +10,11 @@
 
 #include <list>
 #include <map>
+#include <set>
 #include "vertice.h"
 #include "aresta.h"
 #include "projeto_software.h"
-
+#include "union_find.h"
 using namespace std;
 
 
@@ -30,6 +31,8 @@ public:
     void salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters);
 private:
     list<vertice*> V;
+    set<cluster_vertices> gerar_kruskal_k_clusters(int k);
+    bool adicao_de_nova_aresta_forma_ciclo(set<cluster_vertices> arestas_ja_adicionadas, aresta* nova_aresta);
 };
 
 #endif	/* GRAFO_H */

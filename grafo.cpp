@@ -7,11 +7,22 @@
 
 #include "grafo.h"
 #include "helpers.h"
+#include "union_find.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <tr1/regex>
+
+struct criterio_ordenacao_arestas_kruskal{
+    inline bool operator() (const aresta* x, const aresta* y){
+        int peso_x = -x->peso();
+        int peso_y = -y->peso();
+        
+        return peso_x < peso_y;
+    }
+} ;
+
 grafo::grafo(list<vertice*> vertices) {
     copy(vertices.begin(),vertices.end(), back_inserter(this->V));
 }
@@ -159,5 +170,45 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 }
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
+    set<cluster_vertices> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
+}
 
+set<cluster_vertices> grafo::gerar_kruskal_k_clusters(int k) {
+    
+    
+    // list<aresta*> arestas;
+    list<aresta*> arestas;
+    
+    for(list<vertice*>::iterator i=this->V.begin();i!= this->V.end();++i){
+        vertice *v_i = *i;
+        
+        for (list<aresta*>::const_iterator j=v_i->lista_adjacencia().begin();j!= v_i->lista_adjacencia().end();++j){
+            arestas.push_back(*j);
+        }
+
+    }
+    arestas.sort(criterio_ordenacao_arestas_kruskal());
+    
+    union_find *unf = new union_find(this->V);
+    set<cluster_vertices> s;
+    
+    while (unf->numero_conjuntos() > k){
+        aresta* menor_aresta = arestas.front();
+        s = unf->conjuntos_disjuntos();
+        
+        if (!adicao_de_nova_aresta_forma_ciclo(s, menor_aresta)){
+            vertice* u = menor_aresta->extremidade_x();
+            vertice* v = menor_aresta->extremidade_y();
+            
+            if (!unf->encontrar(u) != unf->encontrar(v)){
+                unf->unir(u, v);
+            }
+        }
+    }
+    
+    return s;
+}
+
+bool grafo::adicao_de_nova_aresta_forma_ciclo(set<cluster_vertices> arestas_ja_adicionadas, aresta* nova_aresta) {
+    return false;
 }

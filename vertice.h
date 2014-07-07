@@ -17,12 +17,13 @@ using namespace std;
 
 class vertice {
 public:
-    int identificador();
+    int identificador() const;
     vertice(int id);
-    string para_string();
+    string para_string() const;
     void conectar_a_outro_vertice(vertice &y, int peso_aresta);
     list<aresta*> lista_adjacencia() const;
-    bool adjacente_a(vertice &outro);
+    bool adjacente_a(vertice &outro) const;
+    bool operator ==(const vertice& outro) const;
     
 private:
     int id;

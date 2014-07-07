@@ -15,9 +15,11 @@ using namespace std;
 class aresta {
 public:
     aresta(vertice &x, vertice &y, int peso);
-    int peso();
-    string para_string();
-    vertice& obter_vertice_da_outra_extremidade(const vertice &x) const;
+    int peso() const;
+    string para_string() const;
+    const vertice& obter_vertice_da_outra_extremidade(const vertice &x) const;
+    vertice* extremidade_x() const;
+    vertice* extremidade_y() const;
 private:
     pair<vertice*, vertice*> vertices_extremidades;
     int valor_conexao;
