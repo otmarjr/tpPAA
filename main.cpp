@@ -143,6 +143,7 @@ static void gerar_grafo(parametros_execucao_programa &params) {
 
 static void encontrar_clusters(parametros_execucao_programa &params) {
     grafo *g = grafo::construir_a_partir_de_arquivo_pajek(params.caminho_arquivo_entrada);
+    g->salvar_em_formato_pajek("c:\\windows\\temp\\debug_grafo_200.net");
     g->salvar_clusters_projetos_em_arquivo(params.quantidade_clusters, params.caminho_arquivo_saida);
     cout<<" Clusters do grafo salvos com sucesso em "<< params.caminho_arquivo_saida;
 }

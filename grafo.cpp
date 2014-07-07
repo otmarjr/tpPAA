@@ -223,7 +223,16 @@ set<cluster_vertices> grafo::gerar_kruskal_k_clusters(int k) {
     for(list<vertice*>::iterator i=this->V.begin();i!= this->V.end();++i){
         vertice *v_i = *i;
         
-        for (list<aresta*>::const_iterator j=v_i->lista_adjacencia().begin();j!= v_i->lista_adjacencia().end();++j){
+        int tot_arestas = v_i->lista_adjacencia().size();
+        
+        list<aresta*>::const_iterator b = v_i->lista_adjacencia().begin();
+        list<aresta*>::const_iterator eof = v_i->lista_adjacencia().end();
+        
+        for (list<aresta*>::const_iterator j=b;j!= eof;++j){
+            int t = arestas.size();
+            int peso = (*j)->peso();
+            int id1 = (*j)->extremidade_x()->identificador();
+            int id2 = (*j)->extremidade_y()->identificador();
             arestas.push_back(*j);
         }
 
