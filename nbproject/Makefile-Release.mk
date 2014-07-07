@@ -40,6 +40,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/helpers.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/projeto_software.o \
+	${OBJECTDIR}/union_find.o \
 	${OBJECTDIR}/vertice.o
 
 # Test Directory
@@ -97,6 +98,11 @@ ${OBJECTDIR}/projeto_software.o: projeto_software.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software.o projeto_software.cpp
+
+${OBJECTDIR}/union_find.o: union_find.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find.o union_find.cpp
 
 ${OBJECTDIR}/vertice.o: vertice.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -182,6 +188,19 @@ ${OBJECTDIR}/projeto_software_nomain.o: ${OBJECTDIR}/projeto_software.o projeto_
 	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software_nomain.o projeto_software.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/projeto_software.o ${OBJECTDIR}/projeto_software_nomain.o;\
+	fi
+
+${OBJECTDIR}/union_find_nomain.o: ${OBJECTDIR}/union_find.o union_find.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/union_find.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find_nomain.o union_find.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/union_find.o ${OBJECTDIR}/union_find_nomain.o;\
 	fi
 
 ${OBJECTDIR}/vertice_nomain.o: ${OBJECTDIR}/vertice.o vertice.cpp 

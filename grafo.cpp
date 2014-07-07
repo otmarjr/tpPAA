@@ -159,15 +159,5 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 }
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
-    list<string> linhas_arquivo = helpers::carregar_linhas_arquivo(caminho_arquivo_clusters);
-    list<vertice*> v;
-    
-    list<string>::iterator i = linhas_arquivo.begin();
-    istringstream iss(*i);
 
-    string linha;
-    
-    iss >> linha; 
-    
-    string lol2 = linha;
 }

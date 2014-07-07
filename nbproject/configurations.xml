@@ -8,6 +8,7 @@
       <itemPath>grafo.h</itemPath>
       <itemPath>helpers.h</itemPath>
       <itemPath>projeto_software.h</itemPath>
+      <itemPath>union_find.h</itemPath>
       <itemPath>vertice.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -22,6 +23,7 @@
       <itemPath>helpers.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>projeto_software.cpp</itemPath>
+      <itemPath>union_find.cpp</itemPath>
       <itemPath>vertice.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -87,6 +89,10 @@
       </item>
       <item path="tests/newsimpletest.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="union_find.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="union_find.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="vertice.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="vertice.h" ex="false" tool="3" flavor2="0">
@@ -146,6 +152,10 @@
       <item path="projeto_software.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/newsimpletest.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="union_find.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="union_find.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="vertice.cpp" ex="false" tool="1" flavor2="0">
       </item>
