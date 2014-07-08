@@ -31,7 +31,7 @@ public:
     void salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters);
 private:
     list<vertice*> V;
-    set<cluster_vertices> gerar_kruskal_k_clusters(int k);
+    list<cluster_vertices*> gerar_kruskal_k_clusters(int k);
     bool adicao_de_nova_aresta_forma_ciclo(set<conjunto_arestas>& conjuntos_arestas_ja_adicionadas, aresta* nova_aresta);
 };
 

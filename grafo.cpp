@@ -171,7 +171,7 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 }
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
-    set<cluster_vertices> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
+    list<cluster_vertices*> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
     
     ofstream f_saida(caminho_arquivo_clusters.c_str());
 
@@ -184,14 +184,14 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
         int cont_cluster = 0;
 
-        for (set<cluster_vertices>::iterator i = clusters.begin(); i != clusters.end(); ++i) {
-            cluster_vertices c = *i;
+        for (list<cluster_vertices*>::iterator i = clusters.begin(); i != clusters.end(); ++i) {
+            cluster_vertices *c = *i;
             cont_cluster++;
-            f_saida << '\n' << "Cluster " << cont_cluster << " - " << c.size() << " elementos" << endl;
+            f_saida << '\n' << "Cluster " << cont_cluster << " - " << c->size() << " elementos" << endl;
 
             stringstream ss;
 
-            for (cluster_vertices::iterator j = c.begin(); j != c.end(); ++j) {
+            for (cluster_vertices::iterator j = c->begin(); j != c->end(); ++j) {
                 vertice *v = *j;
                 ss << v->identificador() << ',';
             }
@@ -213,7 +213,7 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
 }
 
-set<cluster_vertices> grafo::gerar_kruskal_k_clusters(int k) {
+list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
 
     // list<aresta*> arestas;
@@ -245,13 +245,16 @@ set<cluster_vertices> grafo::gerar_kruskal_k_clusters(int k) {
             vertice* u = menor_aresta->extremidade_x();
             vertice* v = menor_aresta->extremidade_y();
 
-            if (!unf->encontrar(u) != unf->encontrar(v)) {
-                // unf->unir(u, v);
+            nome_conjunto_vertices nome_u = unf->encontrar(u);
+            nome_conjunto_vertices nome_v = unf->encontrar(v);
+            
+            if (nome_u != nome_v) {
+                unf->unir(nome_u, nome_v);
             }
         }
     }
 
-    return s;
+    return unf->clusters();
 }
 
 bool grafo::adicao_de_nova_aresta_forma_ciclo(set<conjunto_arestas>& arestas_ja_adicionadas, aresta* nova_aresta) {
