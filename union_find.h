@@ -14,29 +14,17 @@
 #include <map>
 #include "vertice.h"
 
+typedef int nome_conjunto_vertices;
 typedef set<vertice*> cluster_vertices;
 
 class union_find {
 public:
     union_find(list<vertice*>& S);
-    int encontrar(vertice* u); // retorna o nome do componente contendu u
-    void unir(vertice* u, vertice* v);
-    int numero_conjuntos();
-    set<cluster_vertices> conjuntos_disjuntos();
+    nome_conjunto_vertices encontrar(vertice* u); // retorna o nome do componente contendu u
+    void unir(nome_conjunto_vertices a, nome_conjunto_vertices b);
+    int total_conjuntos();
 private:
-    int total_conjuntos;
-    map<vertice*, int> componente;
-    map<vertice*, int> tamanho;
-    /*
-    class registro_union_find {
-    public:
-        vertice *nome_conjunto;
-        registro_union_find *novo_nome_conjunto;
-        int tamanho_conjunto;
-    };
-    map<vertice*, registro_union_find*> componente;
-     */
-
+    int numero_conjuntos;
 };
 
 #endif	/* UNION_FIND_H */

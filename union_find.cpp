@@ -16,13 +16,18 @@ union_find::union_find(list<vertice*>& S) {
         r->nome_conjunto = *i;
         r->novo_nome_conjunto = NULL;
         r->tamanho_conjunto = 1;*/
-        this->componente[*i] = (*i)->identificador();
-        this->tamanho[*i] = 1;
+        // this->componente[*i] = (*i)->identificador();
+        // this->tamanho[*i] = 1;
     }
-    this->total_conjuntos = S.size();
+    this->numero_conjuntos = S.size();
 }
 
-int union_find::encontrar(vertice* u) {
+int union_find::total_conjuntos() {
+    return this->numero_conjuntos;
+}
+
+
+nome_conjunto_vertices union_find::encontrar(vertice* u) {
     /*
     registro_union_find *r = componente[u];
     
@@ -33,53 +38,9 @@ int union_find::encontrar(vertice* u) {
     return r->nome_conjunto->identificador();
      * */
     
-    return this->componente[u];
+    return 0;
 }
 
 
-void union_find::unir(vertice* u, vertice* v) {
-    int tam_u = this->tamanho[u];
-    int tam_v = this->tamanho[v];
-    
-    if (tam_u > tam_v){
-        this->componente[v] = this->componente[u];
-        this->tamanho[u] += tam_v;
-        this->tamanho[v] = this->tamanho[u];
-    }
-    else{
-        this->componente[u] = this->componente[v];
-        this->tamanho[v] += tam_u;
-        this->tamanho[u] = this->tamanho[v];
-    }
-    this->total_conjuntos--;
+void unir(nome_conjunto_vertices a, nome_conjunto_vertices b) {
 }
-
-int union_find::numero_conjuntos() {
-    return this->total_conjuntos;
-}
-
-set<cluster_vertices> union_find::conjuntos_disjuntos() {
-    
-    set<cluster_vertices> s;
-    
-    map<int, cluster_vertices> ja_encontrados;
-    
-    for (map<vertice*,int>::iterator i = this->componente.begin();i!= this->componente.end();++i){
-        int id_conjunto = (*i).second;
-        vertice *v = (*i).first;
-        
-        if (ja_encontrados.find(id_conjunto) == ja_encontrados.end()){
-            cluster_vertices c;
-            c.insert(v);
-            ja_encontrados[id_conjunto]=c;
-            s.insert(c);
-        }
-        else{
-            cluster_vertices c = ja_encontrados[id_conjunto];
-            c.insert(v);
-        }
-    }
-    
-    return s;
-}
-

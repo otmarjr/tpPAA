@@ -8,6 +8,7 @@
 #ifndef ARESTA_H
 #define	ARESTA_H
 #include "vertice.h"
+#include "grafo.h"
 #include <utility>
 #include <string>
 
@@ -20,9 +21,12 @@ public:
     const vertice& obter_vertice_da_outra_extremidade(const vertice &x) const;
     vertice* extremidade_x() const;
     vertice* extremidade_y() const;
+    bool adjacente_a_outra_aresta(aresta& outra_aresta) const;
+    static bool existe_ciclo_no_conjunto(set<aresta*> &conjunto);
 private:
     pair<vertice*, vertice*> vertices_extremidades;
     int valor_conexao;
+    
 };
 
 #endif	/* ARESTA_H */

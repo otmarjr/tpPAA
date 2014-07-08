@@ -17,7 +17,7 @@
 #include "union_find.h"
 using namespace std;
 
-
+typedef set<aresta*> conjunto_arestas;
 
 class grafo {
 public:
@@ -32,7 +32,7 @@ public:
 private:
     list<vertice*> V;
     set<cluster_vertices> gerar_kruskal_k_clusters(int k);
-    bool adicao_de_nova_aresta_forma_ciclo(set<cluster_vertices> arestas_ja_adicionadas, aresta* nova_aresta);
+    bool adicao_de_nova_aresta_forma_ciclo(set<conjunto_arestas>& conjuntos_arestas_ja_adicionadas, aresta* nova_aresta);
 };
 
 #endif	/* GRAFO_H */

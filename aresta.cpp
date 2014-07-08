@@ -49,3 +49,16 @@ vertice* aresta::extremidade_y() const {
     return this->vertices_extremidades.second;
 }
 
+bool aresta::adjacente_a_outra_aresta(aresta& outra_aresta) const {
+    if (this->extremidade_x() == outra_aresta.extremidade_x() || this->extremidade_x() == outra_aresta.extremidade_y()){
+        return true;
+    }
+    
+    if (this->extremidade_y() == outra_aresta.extremidade_x() || this->extremidade_y() == outra_aresta.extremidade_y()){
+        return true;
+    }
+    
+    return false;
+}
+
+
