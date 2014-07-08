@@ -53,6 +53,9 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <ccTool>
+          <warningLevel>3</warningLevel>
+        </ccTool>
       </compileType>
       <item path="aresta.cpp" ex="false" tool="1" flavor2="0">
       </item>

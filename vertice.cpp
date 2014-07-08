@@ -53,7 +53,7 @@ void vertice::conectar_a_outro_vertice(vertice &y, int peso_aresta) {
     }
 }
 
-bool vertice::adjacente_a(vertice &outro) const{
+bool vertice::adjacente_a(vertice &outro) const {
 
     return this->adjacencia.find(outro.id) != this->adjacencia.end();
 }
@@ -66,6 +66,8 @@ list<aresta*> vertice::lista_adjacencia() const {
         l.push_back(i->second);
     }
 
+    list<aresta*>::iterator b = l.begin();
+    list<aresta*>::iterator eof = l.end();
 
     return l;
 }
