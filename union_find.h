@@ -25,8 +25,6 @@ public:
     int total_conjuntos() const;
     list<cluster_vertices*> clusters() const;
 private:
-    int numero_conjuntos;
-    
     class registro_union_find{
     public:
         int tamanho_componente;
@@ -34,8 +32,9 @@ private:
         nome_conjunto_vertices nome_componente;
     };
 
-    map<nome_conjunto_vertices, registro_union_find*> componentes;
-    map<registro_union_find*, cluster_vertices*> conjuntos;
+    map<nome_conjunto_vertices, registro_union_find*> conjuntos_dos_vertices;
+    map<registro_union_find*, cluster_vertices*> vertices_dos_conjuntos;
+    map<nome_conjunto_vertices, cluster_vertices*> clusters_vertices;
 };
 
 #endif	/* UNION_FIND_H */

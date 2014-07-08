@@ -14,61 +14,65 @@ union_find::union_find(list<vertice*>& S) {
     for (list<vertice*>::iterator i = S.begin();i!= S.end();++i){
         registro_union_find *r = new registro_union_find();
         r->nome_componente = (*i)->identificador();
-        r->lider = NULL;
+        r->lider = r;
         r->tamanho_componente = 1;
-        this->componentes[(*i)->identificador()] = r;
+        this->conjuntos_dos_vertices[(*i)->identificador()] = r;
         cluster_vertices *c = new cluster_vertices();
         c->insert(*i);
-        this->conjuntos[r] = c;
+        this->vertices_dos_conjuntos[r] = c;
+        this->clusters_vertices[(*i)->identificador()] = c;
     }
-    this->numero_conjuntos = S.size();
 }
 
 int union_find::total_conjuntos() const {
-    return this->numero_conjuntos;
+    return this->clusters_vertices.size();
 }
 
 
 nome_conjunto_vertices union_find::encontrar(vertice* u) {
-    return this->componentes[u->identificador()]->lider->nome_componente;
+    nome_conjunto_vertices id = u->identificador();
+    return this->conjuntos_dos_vertices[id]->lider->nome_componente;
 }
 
 
 void union_find::unir(nome_conjunto_vertices a, nome_conjunto_vertices b) {
     if (a != b){
-        registro_union_find *componente_A = this->componentes[a]->lider;
-        registro_union_find *componente_B = this->componentes[b]->lider;
+        registro_union_find *componente_A = this->conjuntos_dos_vertices[a]->lider;
+        registro_union_find *componente_B = this->conjuntos_dos_vertices[b]->lider;
         
         
         if (componente_A->tamanho_componente > componente_B->tamanho_componente){
-            cluster_vertices *B = this->conjuntos[componente_B];
+            cluster_vertices *B = this->vertices_dos_conjuntos[componente_B];
             
             for (cluster_vertices::iterator i = B->begin(); i != B->end(); ++i){
-                this->componentes[(*i)->identificador()]->lider = componente_A;
+                this->conjuntos_dos_vertices[(*i)->identificador()]->lider = componente_A;
             }
             
             componente_A->tamanho_componente += componente_B->tamanho_componente;
+            this->clusters_vertices[a]->insert(this->clusters_vertices[b]->begin(), this->clusters_vertices[b]->end());
+            this->clusters_vertices.erase(b);
         }
         else{
             
-            cluster_vertices *A = this->conjuntos[componente_A];
+            cluster_vertices *A = this->vertices_dos_conjuntos[componente_A];
             
             for (cluster_vertices::iterator i = A->begin(); i != A->end(); ++i){
-                this->componentes[(*i)->identificador()]->lider = componente_B;
+                this->conjuntos_dos_vertices[(*i)->identificador()]->lider = componente_B;
             }
             
             componente_B->tamanho_componente += componente_A->tamanho_componente;
-            
+            this->conjuntos_dos_vertices[a] = this->conjuntos_dos_vertices[b];
+            this->clusters_vertices[b]->insert(this->clusters_vertices[a]->begin(), this->clusters_vertices[a]->end());
+            this->clusters_vertices.erase(a);
         }
         
-        this->numero_conjuntos--;
     }
 }
 
 list<cluster_vertices*> union_find::clusters() const {
     list<cluster_vertices*> l;
     
-    for (map<registro_union_find*, cluster_vertices*>::const_iterator i = this->conjuntos.begin(); i != this->conjuntos.end(); ++i){
+    for (map<nome_conjunto_vertices, cluster_vertices*>::const_iterator i = this->clusters_vertices.begin(); i != this->clusters_vertices.end(); ++i){
         cluster_vertices *c = i->second;
         l.push_back(c);
     }

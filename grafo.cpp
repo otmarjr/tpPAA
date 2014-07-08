@@ -172,7 +172,7 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
     list<cluster_vertices*> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
-    
+
     ofstream f_saida(caminho_arquivo_clusters.c_str());
 
     if (!f_saida.good() || !f_saida.is_open()) {
@@ -229,55 +229,33 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             arestas.push_back(a);
         }
     }
-    
+
     arestas.sort(criterio_ordenacao_arestas_kruskal());
-    
+
     union_find *unf = new union_find(this->V);
     set<cluster_vertices> s;
 
     set<conjunto_arestas> arestas_clusters;
-    
+
     while (unf->total_conjuntos() > k) {
         aresta* menor_aresta = arestas.front();
         
+        arestas.pop_front();
 
-        if (!adicao_de_nova_aresta_forma_ciclo(arestas_clusters, menor_aresta)) {
-            vertice* u = menor_aresta->extremidade_x();
-            vertice* v = menor_aresta->extremidade_y();
+        vertice* u = menor_aresta->extremidade_x();
+        vertice* v = menor_aresta->extremidade_y();
 
-            nome_conjunto_vertices nome_u = unf->encontrar(u);
-            nome_conjunto_vertices nome_v = unf->encontrar(v);
-            
-            if (nome_u != nome_v) {
-                unf->unir(nome_u, nome_v);
-            }
+        nome_conjunto_vertices nome_u = unf->encontrar(u);
+        nome_conjunto_vertices nome_v = unf->encontrar(v);
+
+        if (nome_u != nome_v) {
+            unf->unir(nome_u, nome_v);
         }
+        
+        nome_u = unf->encontrar(u);
+        nome_v = unf->encontrar(v);
+        bool iguais = (nome_u == nome_v);
     }
 
     return unf->clusters();
-}
-
-bool grafo::adicao_de_nova_aresta_forma_ciclo(set<conjunto_arestas>& arestas_ja_adicionadas, aresta* nova_aresta) {
-    // 1o, encontra o cluster em que a aresta surge conectando:
-    
-    for (set<conjunto_arestas>::iterator i = arestas_ja_adicionadas.begin();i!= arestas_ja_adicionadas.end();++i){
-        conjunto_arestas c  = *i;
-        
-        bool cluster_possui_intersecao_com_aresta = false;
-        
-        for (conjunto_arestas::iterator j = c.begin(); j != c.end(); ++j){
-            aresta *a = *j;
-            if (a->adjacente_a_outra_aresta(*nova_aresta)){
-                cluster_possui_intersecao_com_aresta = true;
-                break;
-            }
-        }
-        
-        if (cluster_possui_intersecao_com_aresta){
-            // Como o conjunto de arestas está como uma árvore, um ciclo é detec
-            
-        }
-    }
-    
-    return false;
 }
