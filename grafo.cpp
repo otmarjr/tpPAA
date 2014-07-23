@@ -24,11 +24,20 @@ struct criterio_ordenacao_arestas_kruskal {
     }
 };
 
+constexpr dimensoes_similaridade operator|(dimensoes_similaridade d1, dimensoes_similaridade d2) {
+    return dimensoes_similaridade(int(d1) | int(d2));
+}
+
+constexpr dimensoes_similaridade operator&(dimensoes_similaridade d1, dimensoes_similaridade d2) {
+    return dimensoes_similaridade(int(d1) & int(d2));
+}
+
+
 grafo::grafo(list<vertice*> vertices) {
     copy(vertices.begin(), vertices.end(), back_inserter(this->V));
 }
 
-grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words) {
+grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words, bool ponderar_devs_em_comum, bool ponderar_lp_comum, bool ponderar_idade_comum, bool ponderar_palavras_chave) {
     list<vertice*> vertices;
 
     for (map<int, projeto_software*>::const_iterator it = projetos.begin(); it != projetos.end(); ++it) {
@@ -37,8 +46,6 @@ grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_
     }
 
     for (list<vertice*>::const_iterator i = vertices.begin(); i != vertices.end(); ++i) {
-        int id_i = (*i)->identificador();
-
         vertice* x = (*i);
         projeto_software *proj_x = projetos[x->identificador()];
 
@@ -48,8 +55,26 @@ grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_
         for (++j; j != vertices.end(); ++j) {
             vertice* y = (*j);
             projeto_software *proj_y = projetos[y->identificador()];
-            int id_j = proj_y->identificador();
-            int peso_i_j = proj_x->calcular_similiaridade_com_outro_projeto(*proj_y, stop_words);
+            
+            dimensoes_similaridade criterios_dimensoes = dimensoes_similaridade::NENHUMA;
+            
+            if (ponderar_devs_em_comum) {
+                criterios_dimensoes = criterios_dimensoes | dimensoes_similaridade::DESENVOLVEDORES_COMUNS;
+            }
+            
+            if (ponderar_lp_comum) {
+                criterios_dimensoes = criterios_dimensoes | dimensoes_similaridade::LINGUAGEM_PROGRAMACAO;
+            }
+            
+            if (ponderar_idade_comum) {
+                criterios_dimensoes =  criterios_dimensoes | dimensoes_similaridade::IDADE_PROJETO;
+            }
+            
+            if (ponderar_palavras_chave) {
+                criterios_dimensoes = criterios_dimensoes | dimensoes_similaridade::PALAVRAS_CHAVE;
+            }
+            
+            int peso_i_j = proj_x->calcular_similiaridade_com_outro_projeto(*proj_y, stop_words, criterios_dimensoes);
 
             if (peso_i_j > 0) {
                 x->conectar_a_outro_vertice(*y, peso_i_j);
@@ -254,7 +279,6 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         
         nome_u = unf->encontrar(u);
         nome_v = unf->encontrar(v);
-        bool iguais = (nome_u == nome_v);
     }
 
     return unf->clusters();

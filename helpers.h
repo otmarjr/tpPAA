@@ -24,7 +24,7 @@ public:
     static list<string> carregar_linhas_arquivo(string caminho_arquivo);
     static bool string_e_inteiro(string texto);
     static int string_para_inteiro(string& texto);
-    
+    static char * strptime_port_windows(const char *s, const char *format, struct tm *tm);
 };
 
 #endif	/* HELPERS_H */

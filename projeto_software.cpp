@@ -20,16 +20,20 @@
 #include<list>
 using namespace std;
 
+
+
+
 projeto_software::projeto_software(string linha_info_projetos) {
     stringstream stream_dados_projeto(linha_info_projetos);
     string campo_arquivo;
 
     // Cada linha do arquivo tem o formato: <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>
     const char DELIMITADOR_CAMPOS_ARQUIVO = '|';
-    const int TOTAL_CAMPOS_ARQUIVO  = 5;
-    int total_campos_linha = count(linha_info_projetos.begin(), linha_info_projetos.end(), DELIMITADOR_CAMPOS_ARQUIVO) +1;
-    if ( total_campos_linha != TOTAL_CAMPOS_ARQUIVO) {
-        string erro = "Foi recebida uma linha fora do formato de conversão, que é <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>.";;
+    const int TOTAL_CAMPOS_ARQUIVO = 5;
+    int total_campos_linha = count(linha_info_projetos.begin(), linha_info_projetos.end(), DELIMITADOR_CAMPOS_ARQUIVO) + 1;
+    if (total_campos_linha != TOTAL_CAMPOS_ARQUIVO) {
+        string erro = "Foi recebida uma linha fora do formato de conversão, que é <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>.";
+        ;
         throw erro;
     }
 
@@ -61,7 +65,8 @@ projeto_software::projeto_software(string linha_info_projetos) {
 
         tm momento_ultimo_commit;
         const char* formato_parse = "%Y-%m-%d %H:%M:%S";
-        strptime(campo_arquivo.c_str(), formato_parse, &momento_ultimo_commit);
+        
+        helpers::strptime_port_windows(campo_arquivo.c_str(), formato_parse, &momento_ultimo_commit);
         time_t momento_commit = mktime(&momento_ultimo_commit);
 
 
@@ -157,35 +162,51 @@ const list<string>& projeto_software::membros() const {
     return this->logins_membros;
 }
 
-int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words) const {
+int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software& outro_projeto, list<string>& stop_words, dimensoes_similaridade &criterios) const {
     int similaridade = 0;
 
 
     string lp_outro_projeto = outro_projeto.linguagem;
     string lp_este_projeto = this->linguagem;
 
-    if (helpers::strings_sao_equivalentes(lp_outro_projeto, lp_este_projeto)) {
-        similaridade;
+    if ((criterios & dimensoes_similaridade::LINGUAGEM_PROGRAMACAO) == dimensoes_similaridade::LINGUAGEM_PROGRAMACAO) {
+        if (helpers::strings_sao_equivalentes(lp_outro_projeto, lp_este_projeto)) {
+            similaridade++;
+        }
     }
 
-    if (outro_projeto.ultimo_commit_menos_um_ano == this->ultimo_commit_menos_um_ano) {
-        similaridade++;
+
+    if ((criterios & dimensoes_similaridade::IDADE_PROJETO) == dimensoes_similaridade::IDADE_PROJETO) {
+        if (outro_projeto.ultimo_commit_menos_um_ano == this->ultimo_commit_menos_um_ano) {
+            similaridade++;
+        }
     }
 
+    if ((criterios & dimensoes_similaridade::PALAVRAS_CHAVE) == dimensoes_similaridade::PALAVRAS_CHAVE) {
 
-    list<string> palavras_chave_outro_projeto= outro_projeto.palavras_significativas_na_descricao(stop_words);
-    list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
+        list<string> palavras_chave_outro_projeto = outro_projeto.palavras_significativas_na_descricao(stop_words);
+        list<string> palavras_chave_este_projeto = this->palavras_significativas_na_descricao(stop_words);
 
-    int numero_palavras_em_comum_na_descricao = helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto);
-    similaridade += numero_palavras_em_comum_na_descricao;
-    
-    list<string> membros_outro_projeto = outro_projeto.membros();
-    list<string> membros_este_projeto = this->membros();
+        int numero_palavras_em_comum_na_descricao = helpers::contar_numero_strings_em_comum(palavras_chave_outro_projeto, palavras_chave_este_projeto);
+        similaridade += numero_palavras_em_comum_na_descricao;
+    }
 
-    int numero_membros_em_comum_projeto = helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto);
-    similaridade += numero_membros_em_comum_projeto;
+    if ((criterios & dimensoes_similaridade::DESENVOLVEDORES_COMUNS) == dimensoes_similaridade::DESENVOLVEDORES_COMUNS) {
+
+        list<string> membros_outro_projeto = outro_projeto.membros();
+        list<string> membros_este_projeto = this->membros();
+
+        int numero_membros_em_comum_projeto = helpers::contar_numero_strings_em_comum(membros_este_projeto, membros_outro_projeto);
+        similaridade += numero_membros_em_comum_projeto;
+    }
 
     return similaridade;
+}
+
+int projeto_software::calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words) const {
+    dimensoes_similaridade todas_dimensoes;
+    todas_dimensoes = dimensoes_similaridade::TODAS;
+    return calcular_similiaridade_com_outro_projeto(outro_projeto, stop_words, todas_dimensoes);
 }
 
 list<string> projeto_software::palavras_significativas_na_descricao(list<string> &stop_words) const {
@@ -195,7 +216,7 @@ list<string> projeto_software::palavras_significativas_na_descricao(list<string>
     string palavra_descricao;
 
     stop_words.sort();
-    
+
     while (iss >> palavra_descricao) {
         bool palava_descricao_e_stop_word = binary_search(stop_words.begin(), stop_words.end(), palavra_descricao);
 

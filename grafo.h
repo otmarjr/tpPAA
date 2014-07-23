@@ -24,7 +24,7 @@ public:
     grafo(list<vertice*> verticess);
     
     // A partir da coleção de projetos de software carregada em memória, transforma-os em um grafo.
-    static grafo* construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words); 
+    static grafo* construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words, bool ponderar_devs_em_comum, bool ponderar_lp_comum, bool ponderar_idade_comum, bool ponderar_palavras_chave); 
     static grafo* construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek);
     
     void salvar_em_formato_pajek(string caminho_arquivo);

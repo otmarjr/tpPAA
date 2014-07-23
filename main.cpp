@@ -14,21 +14,32 @@
 #include <unistd.h>
 #include <list>
 #include <fstream>
+#include <algorithm>
 using namespace std;
 
-typedef struct {
+#define DIMENSAO_LP 'l'
+#define DIMENSAO_DESENVOLVEDORES 'd'
+#define DIMENSAO_IDADE_PROJETO 'i'
+#define DIMENSAO_KEYWORDS 'k'
+
+struct parametros_execucao_programa {
     bool gerar_grafo;
     string caminho_arquivo_entrada;
     string caminho_arquivo_saida;
     bool gerar_clusters;
     string caminho_arquivo_stop_words;
     int quantidade_clusters;
-} parametros_execucao_programa;
+    bool informou_dimensoes;
+    bool considerar_dimensao_linguagem_programacao;
+    bool considerar_dimensao_devs_em_comum;
+    bool considerar_dimensao_idade_projeto;
+    bool considerar_dimensao_palavras_chave;
+} ;
 
-typedef struct {
+struct resultado_validacao_parametros_execucao {
     bool possui_erros;
     list<string> mensagens_erro;
-} resultado_validacao_parametros_execucao;
+};
 
 /*
  * 
@@ -40,13 +51,17 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
     params.gerar_clusters = false;
     params.gerar_grafo = false;
     params.quantidade_clusters = 0;
-
+    params.considerar_dimensao_devs_em_comum = false;
+    params.considerar_dimensao_idade_projeto = false;
+    params.considerar_dimensao_palavras_chave = false;
+    params.considerar_dimensao_linguagem_programacao = false;
+    params.informou_dimensoes = false;
     // Processa os argumentos de entrada do programa que seguem um dos formatos:
     // ./tpPAA -[g,c] -e <ARQUIVO_ENTRADA> -s <ARQUIVO_SAIDA> -w
 
     char opcao;
 
-    while ((opcao = getopt(argc, argv, "gce:s:w:q:")) != -1) {
+    while ((opcao = getopt(argc, argv, "gce:s:w:q:d:")) != -1) {
         string val_opt_arg;
         
         switch (opcao) {
@@ -70,6 +85,15 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
                 if (helpers::string_e_inteiro(val_opt_arg)) {
                     params.quantidade_clusters = helpers::string_para_inteiro(val_opt_arg);
                 }
+                break;
+            case 'd':
+                params.informou_dimensoes = true;
+                val_opt_arg = string(optarg);
+                transform(val_opt_arg.begin(), val_opt_arg.end(), val_opt_arg.begin(), ::tolower);
+                params.considerar_dimensao_devs_em_comum = (val_opt_arg.find(DIMENSAO_DESENVOLVEDORES) != string::npos);
+                params.considerar_dimensao_idade_projeto = (val_opt_arg.find(DIMENSAO_IDADE_PROJETO) != string::npos);
+                params.considerar_dimensao_palavras_chave = (val_opt_arg.find(DIMENSAO_KEYWORDS) != string::npos);
+                params.considerar_dimensao_linguagem_programacao = (val_opt_arg.find(DIMENSAO_LP) != string::npos);
                 break;
         }
     }
@@ -136,7 +160,7 @@ static void gerar_grafo(parametros_execucao_programa &params) {
     colecao_projetos_software projetos = projeto_software::carregar_lista_do_arquivo(params.caminho_arquivo_entrada);
     list<string> stop_words = helpers::carregar_linhas_arquivo(params.caminho_arquivo_stop_words);
 
-    grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words);
+    grafo *g = grafo::construir_a_partir_colecao_projetos_e_stop_words(projetos, stop_words, params.considerar_dimensao_devs_em_comum, params.considerar_dimensao_linguagem_programacao, params.considerar_dimensao_idade_projeto, params.considerar_dimensao_palavras_chave);
     g->salvar_em_formato_pajek(params.caminho_arquivo_saida);
     cout << "Grafo gerado com sucesso e salvo em " << params.caminho_arquivo_saida;
 }

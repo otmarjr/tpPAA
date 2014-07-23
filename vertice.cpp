@@ -62,7 +62,6 @@ list<aresta*> vertice::lista_adjacencia() const {
     list<aresta*> l;
 
     for (map<int, aresta*>::const_iterator i = this->adjacencia.begin(); i != this->adjacencia.end(); ++i) {
-        int peso = i->second->peso();
         l.push_back(i->second);
     }
 

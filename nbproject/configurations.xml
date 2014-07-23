@@ -54,6 +54,8 @@
       </toolsSet>
       <compileType>
         <ccTool>
+          <architecture>2</architecture>
+          <standard>8</standard>
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>
@@ -112,7 +114,7 @@
           <developmentMode>5</developmentMode>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>6</developmentMode>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
