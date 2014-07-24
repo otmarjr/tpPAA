@@ -13,6 +13,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -24,18 +26,18 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -c  -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -q 3 -i 13316 -s </runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -c  -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -q 3 -i 13316 -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_grafo_200.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -c  -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -q 3  -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_grafo_200.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -c  -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -q 5  -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_grafo_200.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -c  -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -q 2  -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_grafo_200.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/projects_github_sorted_developers_info_mini_200.csv" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/projects_github_sorted_developers_info_mini_2000.csv" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_200.csv" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/projects_github_sorted_developers_info_mini_2000.csv" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_2k.net" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/projects_github_sorted_developers_info.csv" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_80k.net" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/20k_projetos.txt" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_20k.net" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_lp_100.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_lp_100.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 2 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_idade_100.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_idade_100.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_dev_500.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_dev_500.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_palavras_500.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_palavras_500.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_lp_500.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_lp_500.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 2 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_idade_500.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_idade_500.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_dev_1000.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_dev_1000.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_palavras_1000.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_palavras_1000.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 3 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_lp_1000.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_lp_1000.net"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -c -q 2 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_idade_1000.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_idade_1000.net"</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" -g -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/20k_projetos.txt" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_20k.net" -w "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/glasgow-modified-stop-words-list.txt"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -c -q 2 -e "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/grafo_idade_1000.net" -s "/cygdrive/c/Users/Otmar/Google Drive/Mestrado/PAA/TP1/massa-testes/clusters_idade_1000.net"</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

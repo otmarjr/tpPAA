@@ -28,12 +28,11 @@ projeto_software::projeto_software(string linha_info_projetos) {
     string campo_arquivo;
 
     // Cada linha do arquivo tem o formato: <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>
-    const char DELIMITADOR_CAMPOS_ARQUIVO = '|';
+    const char DELIMITADOR_CAMPOS_ARQUIVO = '^';
     const int TOTAL_CAMPOS_ARQUIVO = 5;
     int total_campos_linha = count(linha_info_projetos.begin(), linha_info_projetos.end(), DELIMITADOR_CAMPOS_ARQUIVO) + 1;
     if (total_campos_linha != TOTAL_CAMPOS_ARQUIVO) {
-        string erro = "Foi recebida uma linha fora do formato de conversão, que é <ID>|<LINGUAGEM PROGRAMACAO>|<DESCRICAO>|<DATA ULTIMO COMMIT>|<LISTA MEMBROS PROJETO>.";
-        ;
+        string erro = "Foi recebida uma linha fora do formato de conversão, que é <ID>^<LINGUAGEM PROGRAMACAO>^<DESCRICAO>^<DATA ULTIMO COMMIT>^<LISTA MEMBROS PROJETO>.";
         throw erro;
     }
 

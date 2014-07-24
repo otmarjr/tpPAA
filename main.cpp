@@ -20,7 +20,7 @@ using namespace std;
 #define DIMENSAO_LP 'l'
 #define DIMENSAO_DESENVOLVEDORES 'd'
 #define DIMENSAO_IDADE_PROJETO 'i'
-#define DIMENSAO_KEYWORDS 'k'
+#define DIMENSAO_PALAVRAS_CHAVE 'p'
 
 struct parametros_execucao_programa {
     bool gerar_grafo;
@@ -92,7 +92,7 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
                 transform(val_opt_arg.begin(), val_opt_arg.end(), val_opt_arg.begin(), ::tolower);
                 params.considerar_dimensao_devs_em_comum = (val_opt_arg.find(DIMENSAO_DESENVOLVEDORES) != string::npos);
                 params.considerar_dimensao_idade_projeto = (val_opt_arg.find(DIMENSAO_IDADE_PROJETO) != string::npos);
-                params.considerar_dimensao_palavras_chave = (val_opt_arg.find(DIMENSAO_KEYWORDS) != string::npos);
+                params.considerar_dimensao_palavras_chave = (val_opt_arg.find(DIMENSAO_PALAVRAS_CHAVE) != string::npos);
                 params.considerar_dimensao_linguagem_programacao = (val_opt_arg.find(DIMENSAO_LP) != string::npos);
                 break;
         }
@@ -152,7 +152,7 @@ static void exibir_erros_parametros_execucao(resultado_validacao_parametros_exec
         cout << "\n " << *i;
     }
 
-    cout << "\nO programa possui dois modos de execução: geração de grafo e geração de clusters. Para gerar um arquivo de grafo, execute o programa como ./tpPAA -g -e <CAMINHO_ARQUIVO_INFORMACOES_PROJETOS_SOFTWARE> -s <CAMINHO_ARQUIVO_GRAFO_GERADO> -w <CAMINHO_ARQUIVO_STOP_WORDS>.";
+    cout << "\nO programa possui dois modos de execução: geração de grafo e geração de clusters. Para gerar um arquivo de grafo, execute o programa como ./tpPAA -g -e <CAMINHO_ARQUIVO_INFORMACOES_PROJETOS_SOFTWARE> -s <CAMINHO_ARQUIVO_GRAFO_GERADO> -w <CAMINHO_ARQUIVO_STOP_WORDS> -d <DIMENSÕES: l(inguagem promgramação) p(alavras descrição) d(esenvolvedores i(dade projeto)>.";
     cout << "\nPara gerar um arquivo com os clusters encontrados, execute o programa como ./tpPAA -c -e <CAMINHO_ARQUIVO_GRAFO_GERADO> -q <QUANTIDADE_CLUSTERS_GERADOS> -s <CAMINHO_ARQUIVO_CLUSTERS_ENCONTRADOS>.";
 }
 

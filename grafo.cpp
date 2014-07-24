@@ -262,7 +262,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
     set<conjunto_arestas> arestas_clusters;
 
-    while (unf->total_conjuntos() > k) {
+    while (unf->total_conjuntos() > k && arestas.size() > 0) {
         aresta* menor_aresta = arestas.front();
         
         arestas.pop_front();
