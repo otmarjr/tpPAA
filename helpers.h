@@ -36,6 +36,7 @@ public:
     static bool string_e_inteiro(string texto);
     static int string_para_inteiro(string& texto);
     static char * strptime_port_windows(const char *s, const char *format, struct tm *tm);
+    static string sumarizar_entradas_dicionario(map<string, int> dicionario);
 };
 
 #endif	/* HELPERS_H */

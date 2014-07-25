@@ -27,11 +27,11 @@ struct criterio_ordenacao_arestas_kruskal {
 
 template <typename T1, typename T2> struct ordenar_mapa_por_second_decrescente {
     typedef pair<T1, T2> tipo;
-    inline bool operator ()(tipo const& a, tipo const& b) const {
+
+    inline bool operator()(tipo const& a, tipo const& b) const {
         return a.second > b.second;
     }
 };
-
 
 constexpr dimensoes_similaridade operator|(dimensoes_similaridade d1, dimensoes_similaridade d2) {
     return dimensoes_similaridade(int(d1) | int(d2));
@@ -219,8 +219,6 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         helpers::levantar_erro_execucao(oss.str());
     } else {
 
-
-
         list<cluster_vertices*> outliers;
         list<cluster_vertices*> clusters_com_tamanho_minimo;
 
@@ -239,6 +237,7 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         f_saida << "\nTotal de vértices: " << this->V.size();
         f_saida << "\nTotal de arestas: " << this->A.size() / 2; // grafo não direcionado
         f_saida << "\nTotal de componentes conectados do grafo: " << this->todos_componentes_grafo.size();
+        
 
         map<string, int> ocorrencias_globais_lps;
         map<string, int> ocorrencias_globais_devs;
@@ -283,42 +282,41 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         stringstream ss_globais_devs;
         stringstream ss_globais_idade;
         stringstream ss_globais_descricao;
-        
+
         typedef pair<string, int> entrada_map;
-        
+
         vector<entrada_map> entradas_maps(ocorrencias_globais_devs.begin(), ocorrencias_globais_devs.end());
-        
+
         std::sort(entradas_maps.begin(), entradas_maps.end(), ordenar_mapa_por_second_decrescente<string, int>());
-        
-        int cont=0;
+
+        int cont = 0;
         for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
             string dev = (*j).first;
-            ss_globais_devs <<++cont<< ") "<<dev << ": " << (*j).second << " ";
+            ss_globais_devs << ++cont << ") " << dev << ": " << (*j).second << " ";
         }
-        
+
         entradas_maps.clear();
-        
+
         entradas_maps = vector<entrada_map>(ocorrencias_globais_lps.begin(), ocorrencias_globais_lps.end());
-        
+
         std::sort(entradas_maps.begin(), entradas_maps.end(), ordenar_mapa_por_second_decrescente<string, int>());
-        
-        ESCREVER_TRACE(entradas_maps.size());
-        cont=0;
-        
+
+        cont = 0;
+
         for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
             string lp = (*j).first;
-            ss_globais_lps <<++cont<<") '"<< lp << "': " << (*j).second << " ";
+            ss_globais_lps << ++cont << ") '" << lp << "': " << (*j).second << " ";
         }
-        
+
         entradas_maps.clear();
-        
+
         entradas_maps = vector<entrada_map>(ocorrencias_globais_palavras_chave.begin(), ocorrencias_globais_palavras_chave.end());
         std::sort(entradas_maps.begin(), entradas_maps.end(), ordenar_mapa_por_second_decrescente<string, int>());
         cont = 0;
 
         for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
             string palavra = (*j).first;
-            ss_globais_descricao <<++cont<<") "<< palavra << ": " << (*j).second << " ";
+            ss_globais_descricao << ++cont << ") " << palavra << ": " << (*j).second << " ";
         }
 
         for (map<bool, int>::iterator j = ocorrencias_globais_idade.begin(); j != ocorrencias_globais_idade.end(); ++j) {
@@ -327,21 +325,36 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         }
 
         string lista_todos_devs = ss_globais_devs.str();
-        helpers::retirar_ultimo_caractere_se_presente(lista_todos_devs,' ');
-        f_saida << "\n\t" << " Total desenvolvedores: " << ocorrencias_globais_devs.size() << std::endl<<"\t Frequência de cada desenvolvedor: " << lista_todos_devs;
-        
+        helpers::retirar_ultimo_caractere_se_presente(lista_todos_devs, ' ');
+        f_saida << "\n\t" << " Total desenvolvedores: " << ocorrencias_globais_devs.size() << std::endl << "\t Frequência de cada desenvolvedor: " << lista_todos_devs;
+
         string lista_todas_lps = ss_globais_lps.str();
-        helpers::retirar_ultimo_caractere_se_presente(lista_todas_lps,' ');
-        f_saida << "\n\t" << " Total linguagens de programação: " << ocorrencias_globais_lps.size() << std::endl<<"\t Frequência de cada linguagem de programação: " << lista_todas_lps;
-        
+        helpers::retirar_ultimo_caractere_se_presente(lista_todas_lps, ' ');
+        f_saida << "\n\t" << " Total linguagens de programação: " << ocorrencias_globais_lps.size() << std::endl << "\t Frequência de cada linguagem de programação: " << lista_todas_lps;
+
         string lista_todas_palavras_chave = ss_globais_descricao.str();
-        helpers::retirar_ultimo_caractere_se_presente(lista_todas_palavras_chave,' ');
-        f_saida << "\n\t" << " Total palavras chave: " << ocorrencias_globais_palavras_chave.size() << std::endl<<"\t Frequência de cada palavra chave: " << lista_todas_palavras_chave;
-        
+        helpers::retirar_ultimo_caractere_se_presente(lista_todas_palavras_chave, ' ');
+        f_saida << "\n\t" << " Total palavras chave: " << ocorrencias_globais_palavras_chave.size() << std::endl << "\t Frequência de cada palavra chave: " << lista_todas_palavras_chave;
+
         string lista_todas_idades = ss_globais_idade.str();
         helpers::retirar_ultimo_caractere_se_presente(lista_todas_idades, ' ');
         f_saida << "\n\t" << " Total critérios idade: " << ocorrencias_globais_idade.size() << " Frequência projetos com menos de um ano: " << lista_todas_idades;
-        
+
+        f_saida << std::endl << "==================================================" << std::endl;
+        f_saida << "Componentes e seus clusters" << std::endl;
+
+        cont = 0;
+        for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
+            f_saida <<std::endl<< "Componente " << ++cont<< " - Total de "<<(*i)->size()<<" vértices."<<std::endl;
+
+            f_saida << "\tVértices: ";
+            
+            for(componente_grafo::iterator j = (*i)->begin(); j!=(*i)->end();++j){
+                f_saida<<(*j)->identificador()<<" ";
+            }
+            list<cluster_vertices*> clusters_componente = this->clusters_dos_componentes[(*i)];
+        }
+
         int cont_cluster = 0;
         for (list<cluster_vertices*>::iterator i = clusters_com_tamanho_minimo.begin(); i != clusters_com_tamanho_minimo.end(); ++i) {
 
@@ -509,26 +522,22 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
                 nome_u = unf->encontrar(u);
                 nome_v = unf->encontrar(v);
             }
-            list<cluster_vertices*> clusters = unf->clusters();
-            clusters.merge(clusters);
-            this->clusters_dos_componentes[c] = clusters;
+            list<cluster_vertices*> clusters_componente = unf->clusters();
+            clusters.merge(clusters_componente);
+            this->clusters_dos_componentes[c] = clusters_componente;
         } else {
             cluster_vertices *cluster_pequeno = new cluster_vertices();
 
-            ESCREVER_TRACE(c->size());
-            while (!c->empty()) {
-                ESCREVER_TRACE(c->front()->para_string());
-                cluster_pequeno->insert(c->front());
-                c->pop_front();
+            for (componente_grafo::iterator j=c->begin();j!= c->end();++j){
+                cluster_pequeno->insert(*j);
             }
-
+            
             clusters.push_back(cluster_pequeno);
             list<cluster_vertices*> cluster;
             cluster.push_back(cluster_pequeno);
             this->clusters_dos_componentes[c] = cluster;
         }
     }
-
 
 
     return clusters;
@@ -539,8 +548,6 @@ componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* 
 
     map < vertice*, bool> descobertos;
     vector<set<vertice*> > camadas;
-
-    ESCREVER_TRACE(vertice_inicial_busca->para_string())
 
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
         descobertos[*i] = false;
@@ -558,7 +565,6 @@ componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* 
 
         for (set<vertice*>::iterator i = camadas[contador_camada].begin(); i != camadas[contador_camada].end(); ++i) {
             vertice *u = *i;
-            ESCREVER_TRACE(u->para_string());
             c->push_back(u);
 
             list<aresta*> adj_u = u->lista_adjacencia();
@@ -568,8 +574,7 @@ componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* 
 
                 vertice *v = a->extremidade_y();
 
-                ESCREVER_TRACE(v->identificador());
-
+                
                 if (descobertos[v] == false) {
                     descobertos[v] = true;
                     c->push_back(v);
@@ -584,7 +589,6 @@ componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* 
         }
 
     }
-
 
     return c;
 }
