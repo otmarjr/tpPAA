@@ -7,19 +7,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/grafo.h</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/main.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/union_find.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/vertice.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/projeto_software.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/helpers.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/aresta.h</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/aresta.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/projeto_software.h</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/union_find.h</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/helpers.h</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/tests/newsimpletest.cpp</file>
-            <file>file:/C:/Users/Otmar/Documents/NetBeansProjects/tpPAA/grafo.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/helpers.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/main.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/projeto_software.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/vertice.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/grafo.cpp</file>
+            <file>file:/Users/otmarpereira/NetBeansProjects/tpPAA/grafo.h</file>
         </group>
     </open-files>
 </project-private>
