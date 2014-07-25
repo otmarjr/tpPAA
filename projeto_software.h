@@ -42,13 +42,13 @@ public:
     const list<string>& membros() const;
     int calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words) const;
     int calcular_similiaridade_com_outro_projeto(const projeto_software &outro_projeto, list<string> &stop_words, dimensoes_similaridade &dimensoes) const;
+    list<string> palavras_significativas_na_descricao(list<string> &stop_words) const;
 private:
     int id;
     string linguagem;
     string descricao_projeto;
     bool ultimo_commit_menos_um_ano;
     list<string> logins_membros;
-    list<string> palavras_significativas_na_descricao(list<string> &stop_words) const;
 };
 
 #endif	/* PROJETO_SOFTWARE_H */

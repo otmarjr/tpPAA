@@ -28,7 +28,7 @@ public:
     static grafo* construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek);
     
     void salvar_em_formato_pajek(string caminho_arquivo);
-    void salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters);
+    void salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters, colecao_projetos_software &projetos, list<string> &stop_words);
 private:
     list<vertice*> V;
     list<cluster_vertices*> gerar_kruskal_k_clusters(int k);

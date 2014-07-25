@@ -34,7 +34,8 @@ struct parametros_execucao_programa {
     bool considerar_dimensao_devs_em_comum;
     bool considerar_dimensao_idade_projeto;
     bool considerar_dimensao_palavras_chave;
-} ;
+    string caminho_arquivo_informacoes_projetos;
+};
 
 struct resultado_validacao_parametros_execucao {
     bool possui_erros;
@@ -56,14 +57,17 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
     params.considerar_dimensao_palavras_chave = false;
     params.considerar_dimensao_linguagem_programacao = false;
     params.informou_dimensoes = false;
+    params.caminho_arquivo_entrada = "";
+    params.caminho_arquivo_saida = "";
+    params.caminho_arquivo_informacoes_projetos = "";
     // Processa os argumentos de entrada do programa que seguem um dos formatos:
     // ./tpPAA -[g,c] -e <ARQUIVO_ENTRADA> -s <ARQUIVO_SAIDA> -w
 
     char opcao;
 
-    while ((opcao = getopt(argc, argv, "gce:s:w:q:d:")) != -1) {
+    while ((opcao = getopt(argc, argv, "gce:s:w:q:d:i:")) != -1) {
         string val_opt_arg;
-        
+
         switch (opcao) {
             case 'g':
                 params.gerar_grafo = true;
@@ -95,6 +99,9 @@ parametros_execucao_programa processar_argumentos_entrada(int argc, char** argv)
                 params.considerar_dimensao_palavras_chave = (val_opt_arg.find(DIMENSAO_PALAVRAS_CHAVE) != string::npos);
                 params.considerar_dimensao_linguagem_programacao = (val_opt_arg.find(DIMENSAO_LP) != string::npos);
                 break;
+            case 'i':
+                params.caminho_arquivo_informacoes_projetos = string(optarg);
+                break;
         }
     }
 
@@ -109,6 +116,19 @@ resultado_validacao_parametros_execucao validar_parametros_execucao(parametros_e
     arquivo_entrada_ok = f_entrada.good() && f_entrada.is_open();
     f_entrada.close();
 
+
+    // Verifica se o aruqivo de stop words foi fornecido.
+    bool arquivo_stop_words_ok;
+    ifstream f_stop_words(params_exec.caminho_arquivo_stop_words.c_str());
+
+    arquivo_stop_words_ok = f_stop_words.good() && f_stop_words.is_open();
+    
+    f_stop_words.close();
+    
+    if (!arquivo_stop_words_ok) {
+        r.mensagens_erro.push_back("Não foi especificado um caminho válido para o arquivo de stop words em inglês. Verifique o caminho digitado e tente novamente.");
+    }
+            
     if (params_exec.gerar_clusters && params_exec.gerar_grafo) {
         r.mensagens_erro.push_back("\nPara executar o programa, você deve optar entre gerar o grafo dos projetos do software ou os clusters de um grafo. Não é suportado o procsesamento simultâneo de ambas funcionalidades. Execute o programa novamente com apenas um dos argumentos (-g para grafo ou -c para clusters).");
     } else {
@@ -116,24 +136,25 @@ resultado_validacao_parametros_execucao validar_parametros_execucao(parametros_e
             if (!arquivo_entrada_ok) {
                 r.mensagens_erro.push_back("Ocorreu um erro ao tentar verificar o arquivo com informações dos projetos de software para geração do grafo. Verifique se o caminho deste arquivo de entrada foi digitado corretamente.");
             }
-
-            // Verifica se o aruqivo de stop words foi fornecido.
-            ifstream f_stop_words(params_exec.caminho_arquivo_stop_words.c_str());
-
-            if (!f_stop_words.good() || !f_stop_words.is_open()) {
-                r.mensagens_erro.push_back("Não foi especificado um caminho válido para o arquivo de stop words em inglês. Verifique o caminho digitado e tente novamente.");
-            }
-
         } else {
             if (params_exec.gerar_clusters) {
                 if (!arquivo_entrada_ok) {
                     r.mensagens_erro.push_back("Ocorreu um erro ao tentar verificar o arquivo de grafo informado para localização de clusters. Verifique se o caminho deste arquivo de entrada foi digitado corretamente.");
                 }
-                
-                if (params_exec.quantidade_clusters <= 0){
+
+                if (params_exec.quantidade_clusters <= 0) {
                     r.mensagens_erro.push_back("Para fazer a análise de clusters é preciso informar a quantidade de clusters desejada para particionamento do grafo como um número inteiro positivo.");
                 }
-                
+
+                bool arquivo_informacoes_ok;
+                ifstream f_infos_entrada(params_exec.caminho_arquivo_informacoes_projetos.c_str());
+                arquivo_informacoes_ok = f_infos_entrada.good() && f_infos_entrada.is_open();
+                f_infos_entrada.close();
+
+                if (!arquivo_entrada_ok) {
+                    r.mensagens_erro.push_back("Ocorreu um erro ao tentar verificar o arquivo de informações dos projetos informado para detalhes dos clusters. Verifique se o caminho deste arquivo de entrada foi digitado corretamente.");
+                }
+
             } else {
 
                 r.mensagens_erro.push_back("\nEste programa tem dois modos de execução: geração de grafos ou clusters de um grafo. Você não selecionou nnehum dos 2 modos. Execute novamente o programa com o argumento -g para gerar o arquivo de grafo dos projetos de software ou -c para encontrar clusters no grafo de entrada.");
@@ -153,7 +174,7 @@ static void exibir_erros_parametros_execucao(resultado_validacao_parametros_exec
     }
 
     cout << "\nO programa possui dois modos de execução: geração de grafo e geração de clusters. Para gerar um arquivo de grafo, execute o programa como ./tpPAA -g -e <CAMINHO_ARQUIVO_INFORMACOES_PROJETOS_SOFTWARE> -s <CAMINHO_ARQUIVO_GRAFO_GERADO> -w <CAMINHO_ARQUIVO_STOP_WORDS> -d <DIMENSÕES: l(inguagem promgramação) p(alavras descrição) d(esenvolvedores i(dade projeto)>.";
-    cout << "\nPara gerar um arquivo com os clusters encontrados, execute o programa como ./tpPAA -c -e <CAMINHO_ARQUIVO_GRAFO_GERADO> -q <QUANTIDADE_CLUSTERS_GERADOS> -s <CAMINHO_ARQUIVO_CLUSTERS_ENCONTRADOS>.";
+    cout << "\nPara gerar um arquivo com os clusters encontrados, execute o programa como ./tpPAA -c -e <CAMINHO_ARQUIVO_GRAFO_GERADO> -q <QUANTIDADE_CLUSTERS_GERADOS> -s <CAMINHO_ARQUIVO_CLUSTERS_ENCONTRADOS> -i <CAMINHO_ARQUIVO_INFORMACOES_PROJETOS_SOFTWARE>  -w <CAMINHO_ARQUIVO_STOP_WORDS>.";
 }
 
 static void gerar_grafo(parametros_execucao_programa &params) {
@@ -167,8 +188,10 @@ static void gerar_grafo(parametros_execucao_programa &params) {
 
 static void encontrar_clusters(parametros_execucao_programa &params) {
     grafo *g = grafo::construir_a_partir_de_arquivo_pajek(params.caminho_arquivo_entrada);
-    g->salvar_clusters_projetos_em_arquivo(params.quantidade_clusters, params.caminho_arquivo_saida);
-    cout<<" Clusters do grafo salvos com sucesso em "<< params.caminho_arquivo_saida;
+    colecao_projetos_software projetos = projeto_software::carregar_lista_do_arquivo(params.caminho_arquivo_informacoes_projetos);
+    list<string> stop_words = helpers::carregar_linhas_arquivo(params.caminho_arquivo_stop_words);
+    g->salvar_clusters_projetos_em_arquivo(params.quantidade_clusters, params.caminho_arquivo_saida, projetos, stop_words);
+    cout << " Clusters do grafo salvos com sucesso em " << params.caminho_arquivo_saida;
 }
 
 int main(int argc, char** argv) {

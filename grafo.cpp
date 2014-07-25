@@ -195,7 +195,7 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
     return g;
 }
 
-void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters) {
+void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters,colecao_projetos_software &projetos, list<string> &stop_words) {
     list<cluster_vertices*> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
 
     ofstream f_saida(caminho_arquivo_clusters.c_str());
@@ -212,8 +212,79 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         for (list<cluster_vertices*>::iterator i = clusters.begin(); i != clusters.end(); ++i) {
             cluster_vertices *c = *i;
             cont_cluster++;
+            
+            map<string, int> ocorrencias_lps;
+            map<string, int> ocorrencias_devs;
+            map<bool, int> ocorrencias_idade;
+            map<string, int> ocorrencias_palavras_chave;
+            
+            for (cluster_vertices::iterator j = c->begin(); j != c->end(); ++j) {
+                vertice *v = *j;
+                int identificador = v->identificador();
+                projeto_software *p = projetos[identificador];
+                
+                if (ocorrencias_lps.find(p->linguagem_programacao()) == ocorrencias_lps.end()){
+                    ocorrencias_lps[p->linguagem_programacao()] = 1;
+                }
+                else{
+                    ocorrencias_lps[p->linguagem_programacao()]+=1;
+                }
+                
+                if (ocorrencias_idade.find(p->modificado_ultimo_ano()) == ocorrencias_idade.end()){
+                    ocorrencias_idade[p->modificado_ultimo_ano()] = 1;
+                }
+                else{
+                    ocorrencias_idade[p->modificado_ultimo_ano()]+=1;
+                }
+                
+                for (list<string>::const_iterator k = p->membros().begin(); k != p->membros().end();++k){
+                    if (ocorrencias_devs.find(*k) == ocorrencias_devs.end()){
+                        ocorrencias_devs[*k] = 1;
+                    }
+                    else{
+                        ocorrencias_devs[*k]+=1;
+                    }
+                }
+                
+                list<string> palavras_chave = p->palavras_significativas_na_descricao(stop_words);
+                
+                for (list<string>::iterator k = palavras_chave.begin(); k != palavras_chave.end(); ++k){
+                    if (ocorrencias_palavras_chave.find(*k) == ocorrencias_palavras_chave.end()){
+                        ocorrencias_palavras_chave[*k] = 1;
+                    }
+                    else{
+                        ocorrencias_palavras_chave[*k]+=1;
+                    }
+                }
+            }
+            
+            stringstream ss_lps;
+            stringstream ss_devs;
+            stringstream ss_idade;
+            stringstream ss_descricao;
+            
+            for (map<string, int>::iterator j = ocorrencias_devs.begin(); j!= ocorrencias_devs.end();++j){
+                string dev = (*j).first;
+                ss_devs<<dev<<": "<<(*j).second<<",";
+            }
+            
+            for (map<string, int>::iterator j = ocorrencias_lps.begin(); j!= ocorrencias_lps.end();++j){
+                string lp = (*j).first;
+                ss_lps<<lp<<": "<<(*j).second<<",";
+            }
+            
+            for (map<string, int>::iterator j = ocorrencias_palavras_chave.begin(); j!= ocorrencias_palavras_chave.end();++j){
+                string palavra = (*j).first;
+                ss_descricao<<palavra<<": "<<(*j).second<<",";
+            }
+            
+            for (map<bool, int>::iterator j = ocorrencias_idade.begin(); j!= ocorrencias_idade.end();++j){
+                bool modificado_ultimo_ano = (*j).first;
+                ss_idade<<modificado_ultimo_ano<<": "<<(*j).second<<",";
+            }
+            
             f_saida << '\n' << "Cluster " << cont_cluster << " - " << c->size() << " elementos" << endl;
-
+            
             stringstream ss;
 
             for (cluster_vertices::iterator j = c->begin(); j != c->end(); ++j) {
@@ -225,6 +296,23 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
             cluster_str = helpers::retirar_ultimo_caractere_se_presente(cluster_str, ',');
 
             f_saida << cluster_str << endl;
+            
+             string lista_devs = ss_devs.str();
+            helpers::retirar_ultimo_caractere_se_presente(lista_devs,',');
+            
+            string lista_lps = ss_lps.str();
+            helpers::retirar_ultimo_caractere_se_presente(lista_lps,',');
+            
+            string lista_palavras_chave = ss_descricao.str();
+            helpers::retirar_ultimo_caractere_se_presente(lista_palavras_chave,',');
+            
+            string lista_idade = ss_idade.str();
+            helpers::retirar_ultimo_caractere_se_presente(lista_idade,',');
+            
+            f_saida << "\n\t"<<" Total desenvolvedores: "<< ocorrencias_devs.size() <<" Frequência desenvolvedores: "<<lista_devs;
+            f_saida << "\n\t"<<" Total lignagens de programação: "<< ocorrencias_lps.size() <<" Frequência linguagens de programação: "<<lista_lps;
+            f_saida << "\n\t"<<" Total palavras chave: "<< ocorrencias_palavras_chave.size() <<" Frequência palavras: "<<lista_palavras_chave;
+            f_saida << "\n\t"<<" Total critérios idade "<< ocorrencias_idade.size() <<" Frequência projetos com menos de um ano: "<<lista_idade;
         }
 
         f_saida.close();
@@ -243,7 +331,8 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
     // list<aresta*> arestas;
     list<aresta*> arestas;
-
+    list<vertice*> vertices_clusterizacao; // leva em conta apenas vértices com grau > 0
+    
     for (list<vertice*>::iterator i = this->V.begin(); i != this->V.end(); ++i) {
         vertice *v = *i;
 
@@ -252,17 +341,20 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         for (list<aresta*>::const_iterator j = l.begin(); j != l.end(); ++j) {
             aresta *a = *j;
             arestas.push_back(a);
+            
+            if (find(vertices_clusterizacao.begin(), vertices_clusterizacao.end(), v) == vertices_clusterizacao.end()){
+                vertices_clusterizacao.push_back(v);
+            }
         }
     }
 
     arestas.sort(criterio_ordenacao_arestas_kruskal());
 
-    union_find *unf = new union_find(this->V);
-    set<cluster_vertices> s;
+    int total_arestas = arestas.size();
+    
+    union_find *unf = new union_find(vertices_clusterizacao);
 
-    set<conjunto_arestas> arestas_clusters;
-
-    while (unf->total_conjuntos() > k && arestas.size() > 0) {
+    while (unf->total_conjuntos() > k) {
         aresta* menor_aresta = arestas.front();
         
         arestas.pop_front();
