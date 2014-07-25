@@ -375,13 +375,13 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
                 nome_v = unf->encontrar(v);
             }
             clusters.merge(unf->clusters());
-        }else{
+        } else {
             cluster_vertices *cluster_pequeno;
-            
-            for (componente_grafo::iterator i=c.begin();i!= c.end();++i){
+
+            for (componente_grafo::iterator i = c.begin(); i != c.end(); ++i) {
                 cluster_pequeno->insert(*i);
             }
-            
+
             clusters.push_back(cluster_pequeno);
         }
     }
@@ -397,8 +397,8 @@ componente_grafo grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* v
     map < vertice*, bool> descobertos;
     vector<set<vertice*> > camadas;
 
-    string str = vertice_inicial_busca->para_string();
-    
+    ESCREVER_TRACE(vertice_inicial_busca->para_string())
+
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
         descobertos[*i] = false;
     }
@@ -415,10 +415,12 @@ componente_grafo grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* v
 
         for (set<vertice*>::iterator i = camadas[contador_camada].begin(); i != camadas[contador_camada].end(); ++i) {
             vertice *u = *i;
+            ESCREVER_TRACE(u->para_string());
             c.push_back(u);
 
-            for (list<aresta*>::const_iterator j = u->lista_adjacencia().begin(); j != u->lista_adjacencia().end(); ++j) {
+                for (list<aresta*>::const_iterator j = u->lista_adjacencia().begin(); j != u->lista_adjacencia().end(); ++j) {
                 aresta *a = *j;
+                ESCREVER_TRACE(a->para_string());
                 vertice *v = a->extremidade_y();
 
                 if (descobertos[v] == false) {

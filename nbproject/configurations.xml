@@ -88,6 +88,9 @@
         <ccTool>
           <architecture>2</architecture>
           <standard>8</standard>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
           <warningLevel>3</warningLevel>
         </ccTool>
       </compileType>

@@ -77,37 +77,37 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/tppaa: ${OBJECTFILES}
 ${OBJECTDIR}/aresta.o: aresta.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aresta.o aresta.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aresta.o aresta.cpp
 
 ${OBJECTDIR}/grafo.o: grafo.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/grafo.o grafo.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/grafo.o grafo.cpp
 
 ${OBJECTDIR}/helpers.o: helpers.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/helpers.o helpers.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/helpers.o helpers.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/projeto_software.o: projeto_software.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software.o projeto_software.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software.o projeto_software.cpp
 
 ${OBJECTDIR}/union_find.o: union_find.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find.o union_find.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find.o union_find.cpp
 
 ${OBJECTDIR}/vertice.o: vertice.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/vertice.o vertice.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/vertice.o vertice.cpp
 
 # Subprojects
 .build-subprojects:
@@ -122,7 +122,7 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/newsimpletest.o ${OBJECTFILES:%.o=%_no
 ${TESTDIR}/tests/newsimpletest.o: tests/newsimpletest.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -Werror -I. -std=c++11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/newsimpletest.o tests/newsimpletest.cpp
+	$(COMPILE.cc) -g -Werror -DDEBUG -I. -std=c++11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/newsimpletest.o tests/newsimpletest.cpp
 
 
 ${OBJECTDIR}/aresta_nomain.o: ${OBJECTDIR}/aresta.o aresta.cpp 
@@ -133,7 +133,7 @@ ${OBJECTDIR}/aresta_nomain.o: ${OBJECTDIR}/aresta.o aresta.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aresta_nomain.o aresta.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/aresta_nomain.o aresta.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/aresta.o ${OBJECTDIR}/aresta_nomain.o;\
 	fi
@@ -146,7 +146,7 @@ ${OBJECTDIR}/grafo_nomain.o: ${OBJECTDIR}/grafo.o grafo.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/grafo_nomain.o grafo.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/grafo_nomain.o grafo.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/grafo.o ${OBJECTDIR}/grafo_nomain.o;\
 	fi
@@ -159,7 +159,7 @@ ${OBJECTDIR}/helpers_nomain.o: ${OBJECTDIR}/helpers.o helpers.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/helpers_nomain.o helpers.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/helpers_nomain.o helpers.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/helpers.o ${OBJECTDIR}/helpers_nomain.o;\
 	fi
@@ -172,7 +172,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
@@ -185,7 +185,7 @@ ${OBJECTDIR}/projeto_software_nomain.o: ${OBJECTDIR}/projeto_software.o projeto_
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software_nomain.o projeto_software.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/projeto_software_nomain.o projeto_software.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/projeto_software.o ${OBJECTDIR}/projeto_software_nomain.o;\
 	fi
@@ -198,7 +198,7 @@ ${OBJECTDIR}/union_find_nomain.o: ${OBJECTDIR}/union_find.o union_find.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find_nomain.o union_find.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/union_find_nomain.o union_find.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/union_find.o ${OBJECTDIR}/union_find_nomain.o;\
 	fi
@@ -211,7 +211,7 @@ ${OBJECTDIR}/vertice_nomain.o: ${OBJECTDIR}/vertice.o vertice.cpp
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Werror -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/vertice_nomain.o vertice.cpp;\
+	    $(COMPILE.cc) -g -Werror -DDEBUG -std=c++11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/vertice_nomain.o vertice.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/vertice.o ${OBJECTDIR}/vertice_nomain.o;\
 	fi

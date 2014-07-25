@@ -7,8 +7,19 @@
 
 #ifndef HELPERS_H
 #define	HELPERS_H
+
+
+#ifdef DEBUG
+#include <iostream>
+#define ESCREVER_TRACE(msg) std::cout<<"Mensagem recebida para depuração: "<<msg<<endl;
+#else
+#define ESCREVER_TRACE(msg)
+#endif
+
 #include <string>
 #include <list>
+
+
 using namespace std;
 class helpers {
 public:
