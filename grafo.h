@@ -18,6 +18,7 @@
 using namespace std;
 
 typedef set<aresta*> conjunto_arestas;
+typedef list<vertice*> componente_grafo;
 
 class grafo {
 public:
@@ -32,6 +33,8 @@ public:
 private:
     list<vertice*> V;
     list<cluster_vertices*> gerar_kruskal_k_clusters(int k);
+    list<componente_grafo> obter_todos_componentes();
+    componente_grafo obter_vertices_alcanveis_por_busca_em_largura(vertice *vertice_inicial_busca);
 };
 
 #endif	/* GRAFO_H */
