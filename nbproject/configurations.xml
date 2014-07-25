@@ -80,7 +80,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>GNU_1|GNU</compilerSet>
+        <compilerSet>Cygwin_4.x|Cygwin_4.x</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>

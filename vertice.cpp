@@ -65,8 +65,6 @@ list<aresta*> vertice::lista_adjacencia() const {
         l.push_back(i->second);
     }
 
-    ESCREVER_TRACE(l.size()+"");
-
     return l;
 }
 

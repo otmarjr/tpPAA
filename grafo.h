@@ -32,9 +32,12 @@ public:
     void salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters, colecao_projetos_software &projetos, list<string> &stop_words);
 private:
     list<vertice*> V;
+    list<aresta*> A;
     list<cluster_vertices*> gerar_kruskal_k_clusters(int k);
-    list<componente_grafo> obter_todos_componentes();
+    void carregar_todos_componentes_grafo();
     componente_grafo obter_vertices_alcanveis_por_busca_em_largura(vertice *vertice_inicial_busca);
+    bool conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters);
+    list<componente_grafo> todos_componentes_grafo;
 };
 
 #endif	/* GRAFO_H */

@@ -13,6 +13,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <list>
 
 struct criterio_ordenacao_arestas_kruskal {
 
@@ -34,6 +35,10 @@ constexpr dimensoes_similaridade operator&(dimensoes_similaridade d1, dimensoes_
 
 grafo::grafo(list<vertice*> vertices) {
     copy(vertices.begin(), vertices.end(), back_inserter(this->V));
+
+    for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
+        this->A.merge((*i)->lista_adjacencia());
+    }
 }
 
 grafo* grafo::construir_a_partir_colecao_projetos_e_stop_words(colecao_projetos_software &projetos, list<string> &stop_words, bool ponderar_devs_em_comum, bool ponderar_lp_comum, bool ponderar_idade_comum, bool ponderar_palavras_chave) {
@@ -206,11 +211,41 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         helpers::levantar_erro_execucao(oss.str());
     } else {
 
-        int cont_cluster = 0;
+
+
+        list<cluster_vertices*> outliers;
+        list<cluster_vertices*> clusters_com_tamanho_minimo;
+
 
         for (list<cluster_vertices*>::iterator i = clusters.begin(); i != clusters.end(); ++i) {
             cluster_vertices *c = *i;
+
+            if (this->conjunto_forma_outlier(c->size(), quantidade_clusters)) {
+                outliers.push_back(c);
+            } else {
+                clusters_com_tamanho_minimo.push_back(c);
+            }
+        }
+
+        f_saida << "Análise da clusterização: " << this->V.size();
+        f_saida << "\nTotal de vértices: " << this->V.size();
+        f_saida << "\nTotal de arestas: " << this->A.size()/2; // grafo não direcionado
+        f_saida << "\nTotal de componentes conectados do grafo: "<<this->todos_componentes_grafo.size();
+        
+        map<string, int> ocorrencias_globais_lps;
+        map<string, int> ocorrencias_globais_devs;
+        map<bool, int> ocorrencias_globais_idade;
+        map<string, int> ocorrencias_globais_palavras_chave;
+        
+        for(colecao_projetos_software::iterator i = projetos.begin();i!= projetos.end();++i){
+            
+        }
+
+        int cont_cluster = 0;
+        for (list<cluster_vertices*>::iterator i = clusters_com_tamanho_minimo.begin(); i != clusters_com_tamanho_minimo.end(); ++i) {
+
             cont_cluster++;
+            cluster_vertices *c = *i;
 
             map<string, int> ocorrencias_lps;
             map<string, int> ocorrencias_devs;
@@ -318,7 +353,6 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
             helpers::levantar_erro_execucao(oss.str());
         }
     }
-
 }
 
 list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
@@ -326,9 +360,9 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
     list<cluster_vertices*> clusters;
 
-    list<componente_grafo> componentes_grafo = this->obter_todos_componentes();
+    this->carregar_todos_componentes_grafo();
 
-    for (list<componente_grafo>::iterator i = componentes_grafo.begin(); i != componentes_grafo.end(); ++i) {
+    for (list<componente_grafo>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
 
         componente_grafo c = *i;
         list<aresta*> arestas;
@@ -353,7 +387,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
         int total_arestas = arestas.size();
 
-        if (total_arestas >= k) {
+        if (!this->conjunto_forma_outlier(arestas.size(), k)) {
             union_find *unf = new union_find(vertices_clusterizacao);
 
             while (unf->total_conjuntos() > k) {
@@ -376,10 +410,13 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             }
             clusters.merge(unf->clusters());
         } else {
-            cluster_vertices *cluster_pequeno;
+            cluster_vertices *cluster_pequeno = new cluster_vertices();
 
-            for (componente_grafo::iterator i = c.begin(); i != c.end(); ++i) {
-                cluster_pequeno->insert(*i);
+            ESCREVER_TRACE(c.size());
+            while (!c.empty()) {
+                ESCREVER_TRACE(c.front()->para_string());
+                cluster_pequeno->insert(c.front());
+                c.pop_front();
             }
 
             clusters.push_back(cluster_pequeno);
@@ -418,10 +455,14 @@ componente_grafo grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* v
             ESCREVER_TRACE(u->para_string());
             c.push_back(u);
 
-                for (list<aresta*>::const_iterator j = u->lista_adjacencia().begin(); j != u->lista_adjacencia().end(); ++j) {
+            list<aresta*> adj_u = u->lista_adjacencia();
+
+            for (list<aresta*>::const_iterator j = adj_u.begin(); j != adj_u.end(); ++j) {
                 aresta *a = *j;
-                ESCREVER_TRACE(a->para_string());
+
                 vertice *v = a->extremidade_y();
+
+                ESCREVER_TRACE(v->identificador());
 
                 if (descobertos[v] == false) {
                     descobertos[v] = true;
@@ -429,20 +470,21 @@ componente_grafo grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* v
                     camada_atual.insert(v);
                 }
             }
-
-            if (camada_atual.size() > 0) {
-                contador_camada++;
-                camadas.push_back(camada_atual);
-            }
         }
+
+        if (camada_atual.size() > 0) {
+            contador_camada++;
+            camadas.push_back(camada_atual);
+        }
+
     }
 
 
     return c;
 }
 
-list<componente_grafo> grafo::obter_todos_componentes() {
-    list<componente_grafo> comps;
+void grafo::carregar_todos_componentes_grafo() {
+    this->todos_componentes_grafo.clear();
 
     list<vertice*> vertices_ja_presentes_em_componentes;
 
@@ -451,7 +493,7 @@ list<componente_grafo> grafo::obter_todos_componentes() {
         if (find(vertices_ja_presentes_em_componentes.begin(), vertices_ja_presentes_em_componentes.end(), *i) == vertices_ja_presentes_em_componentes.end()) {
             componente_grafo c = this->obter_vertices_alcanveis_por_busca_em_largura(*i);
 
-            comps.push_back(c);
+            this->todos_componentes_grafo.push_back(c);
 
             for (list<vertice*>::const_iterator j = c.begin(); j != c.end(); ++j) {
                 vertices_ja_presentes_em_componentes.push_back(*j);
@@ -459,5 +501,8 @@ list<componente_grafo> grafo::obter_todos_componentes() {
         }
 
     }
-    return comps;
+}
+
+bool grafo::conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters) {
+    return tamanho_conjunto >= quantidade_clusters;
 }
