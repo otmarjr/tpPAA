@@ -397,7 +397,8 @@ componente_grafo grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* v
     map < vertice*, bool> descobertos;
     vector<set<vertice*> > camadas;
 
-    // inicializa todos os vertices como branco
+    string str = vertice_inicial_busca->para_string();
+    
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
         descobertos[*i] = false;
     }
