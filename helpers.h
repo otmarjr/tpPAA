@@ -18,9 +18,12 @@
 
 #include <string>
 #include <list>
-
+#include <map>
 
 using namespace std;
+
+
+
 class helpers {
 public:
     static string& trim_string(string &texto);
@@ -37,7 +40,11 @@ public:
     static int string_para_inteiro(string& texto);
     static char * strptime_port_windows(const char *s, const char *format, struct tm *tm);
     static string sumarizar_entradas_dicionario(map<string, int> dicionario);
+    static string sumarizar_entradas_dicionario(map<bool, int> dicionario);
 };
+
+
+
 
 #endif	/* HELPERS_H */
 

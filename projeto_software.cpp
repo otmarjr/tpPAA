@@ -61,16 +61,21 @@ projeto_software::projeto_software(string linha_info_projetos) {
     if (!campo_arquivo.empty() && campo_arquivo.length() == MASCARA_DATA_HORA_ARQUIVO.length()) {
         time_t hora_corrente;
         time(&hora_corrente);
+        const string data_referencia = "2014-07-01 00:00:00";
+        tm tempo_referencia;
 
         tm momento_ultimo_commit;
         const char* formato_parse = "%Y-%m-%d %H:%M:%S";
         
         helpers::strptime_port_windows(campo_arquivo.c_str(), formato_parse, &momento_ultimo_commit);
+        helpers::strptime_port_windows(data_referencia.c_str(), formato_parse, &tempo_referencia);
+        
         time_t momento_commit = mktime(&momento_ultimo_commit);
+        time_t momento_referencia = mktime(&tempo_referencia);
 
 
         const double TOTAL_SEGUNDOS_EM_UM_ANO = 60 * 60 * 24 * 365;
-        double segundos_decorridos_desde_ultimo_commit = difftime(hora_corrente, momento_commit);
+        double segundos_decorridos_desde_ultimo_commit = difftime(momento_referencia, momento_commit);
 
         this->ultimo_commit_menos_um_ano = segundos_decorridos_desde_ultimo_commit <= TOTAL_SEGUNDOS_EM_UM_ANO;
     } else {

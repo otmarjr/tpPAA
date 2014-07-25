@@ -39,6 +39,11 @@ private:
     bool conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters);
     list<componente_grafo*> todos_componentes_grafo;
     map<componente_grafo*, list<cluster_vertices*> > clusters_dos_componentes;
+    map<string, int> coletar_estatisticas_linguagens_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    map<string, int> coletar_estatisticas_devs_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    map<string, int> coletar_estatisticas_palavras_chave_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices, list<string> &stop_words);
+    map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    
     
 };
 

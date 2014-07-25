@@ -24,6 +24,7 @@
 
 using namespace std;
 
+
 std::string &helpers::trim_string_a_esquerda(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
     return s;
@@ -479,4 +480,49 @@ int strncasecmp(char *s1, char *s2, size_t n) {
     }
 
     return tolower(*(unsigned char *) s1) - tolower(*(unsigned char *) s2);
+}
+
+
+template <typename T1, typename T2> struct ordenar_mapa_por_valor_decrescente {
+    typedef pair<T1, T2> tipo;
+    inline bool operator ()(tipo const& a, tipo const& b) const {
+        return a.second > b.second;
+    }
+};
+
+string helpers::sumarizar_entradas_dicionario(map<string, int> dicionario)  {
+    stringstream ss;
+
+    typedef pair<string, int> entrada_map;
+
+    vector<entrada_map> entradas_maps(dicionario.begin(), dicionario.end());
+
+    std::sort(entradas_maps.begin(), entradas_maps.end(), ordenar_mapa_por_valor_decrescente<string, int>());
+
+    int cont = 0;
+    for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
+        string chave = (*j).first;
+        ss << ++cont << ") " << chave << ": " << (*j).second << " ";
+    }
+
+    return ss.str();
+}
+
+
+string helpers::sumarizar_entradas_dicionario(map<bool, int> dicionario)  {
+    stringstream ss;
+
+    typedef pair<bool, int> entrada_map;
+
+    vector<entrada_map> entradas_maps(dicionario.begin(), dicionario.end());
+
+    std::sort(entradas_maps.begin(), entradas_maps.end(), ordenar_mapa_por_valor_decrescente<bool, int>());
+
+    int cont = 0;
+    for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
+        bool chave = (*j).first;
+        ss << ++cont << ") " << chave << ": " << (*j).second << " ";
+    }
+
+    return ss.str();
 }
