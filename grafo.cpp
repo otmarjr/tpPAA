@@ -253,137 +253,46 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
         int cont = 0;
         for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
-            f_saida << std::endl << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértices." << std::endl;
+            int total_arestas = aresta::total_de_arestas_no_conjunto(**i);
+            f_saida << std::endl << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértices e "<<total_arestas<<" arestas." << std::endl;
 
             f_saida << "\tVértices: ";
-            
+
             for (componente_grafo::iterator j = (*i)->begin(); j != (*i)->end(); ++j) {
                 f_saida << (*j)->identificador() << " ";
             }
-            
-            f_saida<<std::endl<<"\tInformações presentes: ";
-            
+
+            f_saida << std::endl << "\tInformações presentes: ";
+
             map<string, int> lps_componente = this->coletar_estatisticas_linguagens_projetos(projetos, **i);
             map<string, int> devs_componente = this->coletar_estatisticas_devs_projetos(projetos, **i);
             map<bool, int> idades_componente = this->coletar_estatisticas_ultimo_commit_projetos(projetos, **i);
             map<string, int> palavras_chave_componente = this->coletar_estatisticas_palavras_chave_projetos(projetos, **i, stop_words);
 
             string texto_todos_devs = helpers::sumarizar_entradas_dicionario(devs_componente);
-            f_saida << "\n\t\t" << " Total desenvolvedores: " << devs_componente.size() << std::endl << "\t\t\t Frequência de cada desenvolvedor: " << texto_todos_devs;
+            f_saida << std::endl << "\t\t" << " Total desenvolvedores: " << devs_componente.size() << std::endl << "\t\t\t Frequência de cada desenvolvedor: " << texto_todos_devs;
 
             string texto_todas_lps = helpers::sumarizar_entradas_dicionario(lps_componente);
-            f_saida << "\n\t\t" << " Total linguagens de programação: " << lps_componente.size() << std::endl << "\t\t\t Frequência de cada linguagem de programação: " << texto_todas_lps;
+            f_saida << std::endl << "\t\t" << " Total linguagens de programação: " << lps_componente.size() << std::endl << "\t\t\t Frequência de cada linguagem de programação: " << texto_todas_lps;
 
             string texto_todas_keywords = helpers::sumarizar_entradas_dicionario(palavras_chave_componente);
-            f_saida << "\n\t\t" << " Total palavras chave: " << palavras_chave_componente.size() << std::endl << "\t\t\t Frequência de cada palavra chave: " << texto_todas_keywords;
+            f_saida << std::endl << "\t\t" << " Total palavras chave: " << palavras_chave_componente.size() << std::endl << "\t\t\t Frequência de cada palavra chave: " << texto_todas_keywords;
 
             string texto_todas_idades = helpers::sumarizar_entradas_dicionario(idades_componente);
-            f_saida << "\n\t\t" << " Total critérios idade: " << idades_componente.size() << std::endl << "\t\t\t Frequência projetos com commit há menos de um ano: " << texto_todas_idades;
-            
-        }
+            f_saida << std::endl << "\t\t" << " Total critérios idade: " << idades_componente.size() << std::endl << "\t\t\t Frequência projetos com commit há menos de um ano: " << texto_todas_idades;
 
-        int cont_cluster = 0;
-        for (list<cluster_vertices*>::iterator i = clusters_com_tamanho_minimo.begin(); i != clusters_com_tamanho_minimo.end(); ++i) {
+            list<cluster_vertices*> clusters_comp = this->clusters_dos_componentes[*i];
 
-            cont_cluster++;
-            cluster_vertices *c = *i;
+            f_saida << std::endl << "\tClusters : ";
 
-            map<string, int> ocorrencias_lps;
-            map<string, int> ocorrencias_devs;
-            map<bool, int> ocorrencias_idade;
-            map<string, int> ocorrencias_palavras_chave;
+            ESCREVER_TRACE(clusters_comp.size());
+            bool conjunto_de_outliers = this->conjunto_forma_outlier(total_arestas, quantidade_clusters);
 
-            for (cluster_vertices::iterator j = c->begin(); j != c->end(); ++j) {
-                vertice *v = *j;
-                int identificador = v->identificador();
-                projeto_software *p = projetos[identificador];
-
-                if (ocorrencias_lps.find(p->linguagem_programacao()) == ocorrencias_lps.end()) {
-                    ocorrencias_lps[p->linguagem_programacao()] = 1;
-                } else {
-                    ocorrencias_lps[p->linguagem_programacao()] += 1;
-                }
-
-                if (ocorrencias_idade.find(p->modificado_ultimo_ano()) == ocorrencias_idade.end()) {
-                    ocorrencias_idade[p->modificado_ultimo_ano()] = 1;
-                } else {
-                    ocorrencias_idade[p->modificado_ultimo_ano()] += 1;
-                }
-
-                for (list<string>::const_iterator k = p->membros().begin(); k != p->membros().end(); ++k) {
-                    if (ocorrencias_devs.find(*k) == ocorrencias_devs.end()) {
-                        ocorrencias_devs[*k] = 1;
-                    } else {
-                        ocorrencias_devs[*k] += 1;
-                    }
-                }
-
-                list<string> palavras_chave = p->palavras_significativas_na_descricao(stop_words);
-
-                for (list<string>::iterator k = palavras_chave.begin(); k != palavras_chave.end(); ++k) {
-                    if (ocorrencias_palavras_chave.find(*k) == ocorrencias_palavras_chave.end()) {
-                        ocorrencias_palavras_chave[*k] = 1;
-                    } else {
-                        ocorrencias_palavras_chave[*k] += 1;
-                    }
-                }
+            if (conjunto_de_outliers) {
+                f_saida << " Nenhum - número de arestas insuficiente.";
+            } else {
+                f_saida << clusters_comp.size() << " encontrados.";
             }
-
-            stringstream ss_lps;
-            stringstream ss_devs;
-            stringstream ss_idade;
-            stringstream ss_descricao;
-
-            for (map<string, int>::iterator j = ocorrencias_devs.begin(); j != ocorrencias_devs.end(); ++j) {
-                string dev = (*j).first;
-                ss_devs << dev << ": " << (*j).second << ",";
-            }
-
-            for (map<string, int>::iterator j = ocorrencias_lps.begin(); j != ocorrencias_lps.end(); ++j) {
-                string lp = (*j).first;
-                ss_lps << lp << ": " << (*j).second << ",";
-            }
-
-            for (map<string, int>::iterator j = ocorrencias_palavras_chave.begin(); j != ocorrencias_palavras_chave.end(); ++j) {
-                string palavra = (*j).first;
-                ss_descricao << palavra << ": " << (*j).second << ",";
-            }
-
-            for (map<bool, int>::iterator j = ocorrencias_idade.begin(); j != ocorrencias_idade.end(); ++j) {
-                bool modificado_ultimo_ano = (*j).first;
-                ss_idade << modificado_ultimo_ano << ": " << (*j).second << ",";
-            }
-
-            f_saida << '\n' << "Cluster " << cont_cluster << " - " << c->size() << " elementos" << endl;
-
-            stringstream ss;
-
-            for (cluster_vertices::iterator j = c->begin(); j != c->end(); ++j) {
-                vertice *v = *j;
-                ss << v->identificador() << ',';
-            }
-
-            string cluster_str = ss.str();
-            cluster_str = helpers::retirar_ultimo_caractere_se_presente(cluster_str, ',');
-
-            f_saida << cluster_str << endl;
-
-            string lista_devs = ss_devs.str();
-            helpers::retirar_ultimo_caractere_se_presente(lista_devs, ',');
-
-            string lista_lps = ss_lps.str();
-            helpers::retirar_ultimo_caractere_se_presente(lista_lps, ',');
-
-            string lista_palavras_chave = ss_descricao.str();
-            helpers::retirar_ultimo_caractere_se_presente(lista_palavras_chave, ',');
-
-            string lista_idade = ss_idade.str();
-            helpers::retirar_ultimo_caractere_se_presente(lista_idade, ',');
-
-            f_saida << "\n\t" << " Total desenvolvedores: " << ocorrencias_devs.size() << " Frequência desenvolvedores: " << lista_devs;
-            f_saida << "\n\t" << " Total lignagens de programação: " << ocorrencias_lps.size() << " Frequência linguagens de programação: " << lista_lps;
-            f_saida << "\n\t" << " Total palavras chave: " << ocorrencias_palavras_chave.size() << " Frequência palavras: " << lista_palavras_chave;
-            f_saida << "\n\t" << " Total critérios idade " << ocorrencias_idade.size() << " Frequência projetos com menos de um ano: " << lista_idade;
         }
 
         f_saida.close();
@@ -541,7 +450,7 @@ void grafo::carregar_todos_componentes_grafo() {
 }
 
 bool grafo::conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters) {
-    return tamanho_conjunto >= quantidade_clusters;
+    return tamanho_conjunto < quantidade_clusters;
 }
 
 map<string, int> grafo::coletar_estatisticas_devs_projetos(colecao_projetos_software& projetos, list<vertice*> &vertices) {

@@ -49,16 +49,15 @@ vertice* aresta::extremidade_y() const {
     return this->vertices_extremidades.second;
 }
 
-bool aresta::adjacente_a_outra_aresta(aresta& outra_aresta) const {
-    if (this->extremidade_x() == outra_aresta.extremidade_x() || this->extremidade_x() == outra_aresta.extremidade_y()){
-        return true;
-    }
+int aresta::total_de_arestas_no_conjunto(list<vertice*>& l) {
+    int total =0;
     
-    if (this->extremidade_y() == outra_aresta.extremidade_x() || this->extremidade_y() == outra_aresta.extremidade_y()){
-        return true;
+    for (list<vertice*>::iterator i = l.begin();i!= l.end();++i){
+        total+= (*i)->lista_adjacencia().size();
     }
-    
-    return false;
+    total = total/2; // O grafo é não direcionado
+    return total;
 }
+
 
 

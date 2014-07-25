@@ -21,8 +21,7 @@ public:
     const vertice& obter_vertice_da_outra_extremidade(const vertice &x) const;
     vertice* extremidade_x() const;
     vertice* extremidade_y() const;
-    bool adjacente_a_outra_aresta(aresta& outra_aresta) const;
-    static bool existe_ciclo_no_conjunto(set<aresta*> &conjunto);
+    static int total_de_arestas_no_conjunto(list<vertice*> &l);
 private:
     pair<vertice*, vertice*> vertices_extremidades;
     int valor_conexao;
