@@ -253,7 +253,7 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
         int cont = 0;
         for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
-            int total_arestas = aresta::total_de_arestas_na_lista(**i);
+            int total_arestas = aresta::total_de_arestas_na_lista(**i, false);
             f_saida << std::endl << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértices e " << total_arestas << " arestas." << std::endl;
 
             f_saida << "\tVértices: ";
@@ -297,8 +297,10 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
                 for (list<cluster_vertices*>::iterator j = clusters_comp.begin(); j != clusters_comp.end(); ++j) {
                     cluster_vertices *cluster = *j;
                     list<vertice*> lista(cluster->begin(), cluster->end());
-                    int total_arestas_cluster = aresta::total_de_arestas_na_lista(lista);
-                    f_saida << std::endl << "\t\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértices e " << total_arestas_cluster << " arestas.";
+                    int total_arestas_cluster_internas = aresta::total_de_arestas_na_lista(lista,false);
+                    int total_arestas_cluster_externas = aresta::total_de_arestas_na_lista(lista, true);
+                    
+                    f_saida << std::endl << "\t\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértices e " << total_arestas_cluster_internas << " arestas internas e "<<(total_arestas_cluster_externas-total_arestas_cluster_internas)<<" externas.";
 
                     f_saida << std::endl<< "\t\t\tVértices: ";
 

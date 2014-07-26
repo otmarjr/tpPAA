@@ -9,6 +9,7 @@
 #include "helpers.h"
 #include <sstream>
 #include <algorithm>
+#include <list>
 
 aresta::aresta(vertice &x, vertice &y, int peso) {
     this->vertices_extremidades.first = &x;
@@ -50,23 +51,28 @@ vertice* aresta::extremidade_y() const {
     return this->vertices_extremidades.second;
 }
 
-int aresta::total_de_arestas_na_lista(list<vertice*>& l) {
+int aresta::total_de_arestas_na_lista(list<vertice*>& l, bool contar_arestas_para_vertices_fora_do_conjunto) {
     int total = 0;
 
+    list<pair<int, int> > pares_do_conjunto_adicionados;
+    
     for (list<vertice*>::iterator i = l.begin(); i != l.end(); ++i) {
-        ESCREVER_TRACE((*i)->lista_adjacencia().size());
-        ESCREVER_TRACE((*i)->identificador());
-        ESCREVER_TRACE((*i)->para_string());
-        for (list<aresta*>::const_iterator j = (*i)->lista_adjacencia().begin(); j!= (*i)->lista_adjacencia().end();++j){
-            aresta *a = (*j);
+        list<aresta*> adj = (*i)->lista_adjacencia();
+
+        for (list<aresta*>::const_iterator j = adj.begin(); j != adj.end(); ++j) {
+            aresta *a = *j;
             vertice *v = a->extremidade_y();
-            
-            ESCREVER_TRACE(v->identificador());
-            if (find(l.begin(), l.end(), v) != l.end()){
-                total+=1;
+            if (find(l.begin(), l.end(), v) != l.end() || contar_arestas_para_vertices_fora_do_conjunto){
+                pair<int, int> par_x_y = make_pair((*i)->identificador(), v->identificador());
+                pair<int, int> par_y_x = make_pair(v->identificador(),(*i)->identificador());
+                
+                if (find(pares_do_conjunto_adicionados.begin(), pares_do_conjunto_adicionados.end(), par_y_x) == pares_do_conjunto_adicionados.end()){
+                    pares_do_conjunto_adicionados.push_back(par_x_y);
+                }
             }
         }
     }
-    total = total / 2; // O grafo é não direcionado
+    
+    total = pares_do_conjunto_adicionados.size();
     return total;
 }
