@@ -6,7 +6,9 @@
  */
 
 #include "aresta.h"
+#include "helpers.h"
 #include <sstream>
+#include <algorithm>
 
 aresta::aresta(vertice &x, vertice &y, int peso) {
     this->vertices_extremidades.first = &x;
@@ -52,7 +54,18 @@ int aresta::total_de_arestas_na_lista(list<vertice*>& l) {
     int total = 0;
 
     for (list<vertice*>::iterator i = l.begin(); i != l.end(); ++i) {
-        total += (*i)->lista_adjacencia().size();
+        ESCREVER_TRACE((*i)->lista_adjacencia().size());
+        ESCREVER_TRACE((*i)->identificador());
+        ESCREVER_TRACE((*i)->para_string());
+        for (list<aresta*>::const_iterator j = (*i)->lista_adjacencia().begin(); j!= (*i)->lista_adjacencia().end();++j){
+            aresta *a = (*j);
+            vertice *v = a->extremidade_y();
+            
+            ESCREVER_TRACE(v->identificador());
+            if (find(l.begin(), l.end(), v) != l.end()){
+                total+=1;
+            }
+        }
     }
     total = total / 2; // O grafo é não direcionado
     return total;
