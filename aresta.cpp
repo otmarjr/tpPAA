@@ -20,25 +20,24 @@ int aresta::peso() const {
 }
 
 // Representa esta aresa {x,y} com peso p no formato [{x,y},p]
-string aresta::para_string() const
-{
+
+string aresta::para_string() const {
     ostringstream oss;
-    
-    oss<<"[{"<<this->extremidade_x()->para_string();
-    oss<<","<<this->extremidade_y()->para_string()<<"}";
-    oss<<","<<this->peso()<<"]";
-    
+
+    oss << "[{" << this->extremidade_x()->para_string();
+    oss << "," << this->extremidade_y()->para_string() << "}";
+    oss << "," << this->peso() << "]";
+
     return oss.str();
 }
 
 const vertice& aresta::obter_vertice_da_outra_extremidade(const vertice &x) const {
-    if (x == *(this->extremidade_x())){
+    if (x == *(this->extremidade_x())) {
         return *(this->extremidade_y());
-    }
-    else{
+    } else {
         return *(this->extremidade_x());
     }
-        
+
 }
 
 vertice* aresta::extremidade_x() const {
@@ -49,15 +48,12 @@ vertice* aresta::extremidade_y() const {
     return this->vertices_extremidades.second;
 }
 
-int aresta::total_de_arestas_no_conjunto(list<vertice*>& l) {
-    int total =0;
-    
-    for (list<vertice*>::iterator i = l.begin();i!= l.end();++i){
-        total+= (*i)->lista_adjacencia().size();
+int aresta::total_de_arestas_na_lista(list<vertice*>& l) {
+    int total = 0;
+
+    for (list<vertice*>::iterator i = l.begin(); i != l.end(); ++i) {
+        total += (*i)->lista_adjacencia().size();
     }
-    total = total/2; // O grafo é não direcionado
+    total = total / 2; // O grafo é não direcionado
     return total;
 }
-
-
-

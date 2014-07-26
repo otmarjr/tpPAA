@@ -253,8 +253,8 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
         int cont = 0;
         for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
-            int total_arestas = aresta::total_de_arestas_no_conjunto(**i);
-            f_saida << std::endl << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértices e "<<total_arestas<<" arestas." << std::endl;
+            int total_arestas = aresta::total_de_arestas_na_lista(**i);
+            f_saida << std::endl << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértices e " << total_arestas << " arestas." << std::endl;
 
             f_saida << "\tVértices: ";
 
@@ -285,13 +285,45 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
             f_saida << std::endl << "\tClusters : ";
 
-            ESCREVER_TRACE(clusters_comp.size());
             bool conjunto_de_outliers = this->conjunto_forma_outlier(total_arestas, quantidade_clusters);
 
             if (conjunto_de_outliers) {
                 f_saida << " Nenhum - número de arestas insuficiente.";
             } else {
                 f_saida << clusters_comp.size() << " encontrados.";
+
+                int contador_clusters = 0;
+
+                for (list<cluster_vertices*>::iterator j = clusters_comp.begin(); j != clusters_comp.end(); ++j) {
+                    cluster_vertices *cluster = *j;
+                    list<vertice*> lista(cluster->begin(), cluster->end());
+                    int total_arestas_cluster = aresta::total_de_arestas_na_lista(lista);
+                    f_saida << std::endl << "\t\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértices e " << total_arestas_cluster << " arestas.";
+
+                    f_saida << std::endl<< "\t\t\tVértices: ";
+
+                    for (cluster_vertices::iterator k = cluster->begin(); k != cluster->end(); ++k) {
+                        f_saida << (*k)->identificador() << " ";
+                    }
+
+                    map<string, int> lps_cluster = this->coletar_estatisticas_linguagens_projetos(projetos, lista);
+                    map<string, int> devs_cluster = this->coletar_estatisticas_devs_projetos(projetos, lista);
+                    map<bool, int> idades_cluster = this->coletar_estatisticas_ultimo_commit_projetos(projetos, lista);
+                    map<string, int> palavras_cluster = this->coletar_estatisticas_palavras_chave_projetos(projetos, lista, stop_words);
+
+                    string texto_todos_devs = helpers::sumarizar_entradas_dicionario(devs_cluster);
+                    f_saida << std::endl << "\t\t\t" << " Total desenvolvedores: " << devs_cluster.size() << std::endl << "\t\t\t Frequência de cada desenvolvedor: " << texto_todos_devs;
+
+                    string texto_todas_lps = helpers::sumarizar_entradas_dicionario(lps_cluster);
+                    f_saida << std::endl << "\t\t\t" << " Total linguagens de programação: " << lps_cluster.size() << std::endl << "\t\t\t Frequência de cada linguagem de programação: " << texto_todas_lps;
+
+                    string texto_todas_keywords = helpers::sumarizar_entradas_dicionario(palavras_cluster);
+                    f_saida << std::endl << "\t\t\t" << " Total palavras chave: " << palavras_cluster.size() << std::endl << "\t\t\t Frequência de cada palavra chave: " << texto_todas_keywords;
+
+                    string texto_todas_idades = helpers::sumarizar_entradas_dicionario(idades_cluster);
+                    f_saida << std::endl << "\t\t\t" << " Total critérios idade: " << idades_cluster.size() << std::endl << "\t\t\t Frequência projetos com commit há menos de um ano: " << texto_todas_idades;
+
+                }
             }
         }
 
@@ -335,8 +367,6 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
         arestas.sort(criterio_ordenacao_arestas_kruskal());
 
-        int total_arestas = arestas.size();
-
         if (!this->conjunto_forma_outlier(arestas.size(), k)) {
             union_find *unf = new union_find(vertices_clusterizacao);
 
@@ -359,8 +389,8 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
                 nome_v = unf->encontrar(v);
             }
             list<cluster_vertices*> clusters_componente = unf->clusters();
-            clusters.merge(clusters_componente);
             this->clusters_dos_componentes[c] = clusters_componente;
+            clusters.merge(clusters_componente);
         } else {
             cluster_vertices *cluster_pequeno = new cluster_vertices();
 
@@ -379,7 +409,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
     return clusters;
 }
 
-componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* vertice_inicial_busca) {
+componente_grafo* grafo::obter_vertices_alcancaveis_por_busca_em_largura(vertice* vertice_inicial_busca) {
     componente_grafo* c = new componente_grafo();
 
     map < vertice*, bool> descobertos;
@@ -410,10 +440,8 @@ componente_grafo* grafo::obter_vertices_alcanveis_por_busca_em_largura(vertice* 
 
                 vertice *v = a->extremidade_y();
 
-
                 if (descobertos[v] == false) {
                     descobertos[v] = true;
-                    c->push_back(v);
                     camada_atual.insert(v);
                 }
             }
@@ -437,7 +465,7 @@ void grafo::carregar_todos_componentes_grafo() {
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
 
         if (find(vertices_ja_presentes_em_componentes.begin(), vertices_ja_presentes_em_componentes.end(), *i) == vertices_ja_presentes_em_componentes.end()) {
-            componente_grafo *c = this->obter_vertices_alcanveis_por_busca_em_largura(*i);
+            componente_grafo *c = this->obter_vertices_alcancaveis_por_busca_em_largura(*i);
 
             this->todos_componentes_grafo.push_back(c);
 

@@ -35,7 +35,7 @@ private:
     list<aresta*> A;
     list<cluster_vertices*> gerar_kruskal_k_clusters(int k);
     void carregar_todos_componentes_grafo();
-    componente_grafo* obter_vertices_alcanveis_por_busca_em_largura(vertice *vertice_inicial_busca);
+    componente_grafo* obter_vertices_alcancaveis_por_busca_em_largura(vertice *vertice_inicial_busca);
     bool conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters);
     list<componente_grafo*> todos_componentes_grafo;
     map<componente_grafo*, list<cluster_vertices*> > clusters_dos_componentes;
