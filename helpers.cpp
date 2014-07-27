@@ -548,3 +548,12 @@ string helpers::sumarizar_entradas_dicionario(map<bool, int> dicionario)  {
 void helpers::escrever_alerta(string mensagem) {
     cout<<"ALERTA DE EXECUÇÃO: "<<mensagem<<std::endl;
 }
+
+long helpers::segundos_entre_dois_clocks(clock_t& antes, clock_t& depois) {
+    return (depois-antes)/CLOCKS_PER_SEC;
+}
+
+long helpers::milissegundos_entre_dois_clocks(clock_t& antes, clock_t& depois) {
+    const int CLOCKS_PER_MSEC = CLOCKS_PER_SEC*1000;
+        return (depois-antes)/CLOCKS_PER_MSEC;
+}

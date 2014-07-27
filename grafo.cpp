@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <vector>
 #include <list>
+#include <unordered_map>
 
 map<int, map<int, int> > ocorrencias_empate_cada_no_cabeca_por_peso;
 
@@ -202,7 +203,14 @@ grafo* grafo::construir_a_partir_de_arquivo_pajek(string caminho_arquivo_pajek) 
 }
 
 void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string caminho_arquivo_clusters, colecao_projetos_software &projetos, list<string> &stop_words) {
+    auto antes_clusterizacao = chrono::high_resolution_clock::now();
+    auto instance_cpu_antes = clock();
     list<cluster_vertices*> clusters = gerar_kruskal_k_clusters(quantidade_clusters);
+    auto depois_clusterizacao = chrono::high_resolution_clock::now();
+    auto instante_cpu_depois = clock();
+
+    this->total_milissegundos_execucao_tempo_de_parede = (chrono::duration_cast<chrono::milliseconds>(depois_clusterizacao - antes_clusterizacao).count());
+    this->total_milissegundos_execucao_tempo_de_cpu = helpers::milissegundos_entre_dois_clocks(instance_cpu_antes, instante_cpu_depois);
 
     ofstream f_saida(caminho_arquivo_clusters.c_str());
 
@@ -228,9 +236,14 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         }
 
         f_saida << "Análise da clusterização - Estatísticas globais ";
-        f_saida << "\nTotal de vértices: " << this->V.size();
-        f_saida << "\nTotal de arestas: " << this->A.size() / 2; // grafo não direcionado
+        f_saida << "\nTotal de vértices (n): " << this->V.size();
+        f_saida << "\nTotal de arestas (m): " << this->A.size() / 2; // grafo não direcionado
         f_saida << "\nTotal de componentes conectados do grafo: " << this->todos_componentes_grafo.size();
+        f_saida << "\nMilissegundos de tempo de parede decorridos com execução: " << this->total_milissegundos_execucao_tempo_de_parede;
+        f_saida << "\nMilissegundos de tempo de CPU decorridos com execução: " << this->total_milissegundos_execucao_tempo_de_cpu;
+        f_saida << "\nMilissegundos de tempo de CPU gastos com busca de componentes via busca em largura: "<<this->total_milisegundos_carga_componentes;
+        f_saida << "\nMilissegundos de tempo de CPU gastos com balanceamento da ordenação: " << this->total_milissegundos_balanceamento;
+        f_saida << "\nMilissegundos de tempo de CPU gastos com clusterização: " << this->total_milissegundos_execucao_clusterizacao;
 
 
         map<string, int> ocorrencias_globais_lps = this->coletar_estatisticas_linguagens_projetos(projetos, this->V);
@@ -256,8 +269,10 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
             int total_arestas = aresta::total_de_arestas_na_lista(**i, false);
             f_saida << std::endl << "\tComponente " << ++cont << " - Total de " << (*i)->size() << " vértice(s) e " << total_arestas << " aresta(s)." << std::endl;
+            f_saida << "\nMilissegundos de tempo de CPU gastos com busca de componentes via busca em largura: "<<this->milissegundos_busca_em_largura_por_componente[*i]<<std::endl;
+            f_saida << "\nMilissegundos de tempo de CPU gastos com balanceamento da ordenação deste componente : " << this->milissegundos_balanceamento_ordenacao_por_componente[*i];
+            f_saida << "\n\nMilissegundos de tempo de CPU gastos com clusterização deste componente: " << this->milissegundos_clusterizacao_por_componente[*i] << std::endl;
 
-            f_saida << "---------------------------------------------------------------------------------------------------" << std::endl;
             f_saida << "\tVértices no componente: ";
             int cont_vertice = 0;
 
@@ -347,8 +362,17 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
 
     list<cluster_vertices*> clusters;
+    
+    auto antes_carga_componentes = clock();
 
     this->carregar_todos_componentes_grafo();
+
+    auto depois_carga_componentes = clock();
+    
+    this->total_milisegundos_carga_componentes = helpers::milissegundos_entre_dois_clocks(antes_carga_componentes, depois_carga_componentes);
+    
+    this->total_milissegundos_balanceamento = 0;
+    this->total_milissegundos_execucao_clusterizacao = 0;
 
     for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
 
@@ -356,15 +380,25 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         list<aresta*> arestas = this->lista_de_arestas_no_componente(c);
         list<vertice*> vertices_clusterizacao = this->lista_de_vertices_no_componente(c);
 
-        // Evita que alguns vértices sejam descobertos apenas no final, caso
-        // comum caso ocorram muitos empates e as arestas fiquem ordenadas pelo
-        // vértice de origem. Isto induz k-1 clusters de tamanho 1.
-        list<aresta*> arestas_balanceadas = this->balancear_ocorrencias_vertices_em_empates_na_lista_ordenada(arestas);
+        long segundos_clusterizacao_deste_componente = 0;
+        long segundos_balanceamento_ordenacao_deste_componente = 0;
 
-        bool componente_possui_tamanho_minimo_para_clusterizar = !this->conjunto_forma_outlier(arestas_balanceadas.size(), k);
+        bool componente_possui_tamanho_minimo_para_clusterizar = !this->conjunto_forma_outlier(arestas.size(), k);
         if (componente_possui_tamanho_minimo_para_clusterizar) {
 
+            // Evita que alguns vértices sejam descobertos apenas no final, caso
+            // comum caso ocorram muitos empates e as arestas fiquem ordenadas pelo
+            // vértice de origem. Isto induz k-1 clusters de tamanho 1.
+            auto instante_antes_ordenacao = clock();
+            list<aresta*> arestas_balanceadas = this->balancear_ocorrencias_vertices_em_empates_na_lista_ordenada(arestas);
+            auto instante_depois_ordenacao = clock();
+            segundos_balanceamento_ordenacao_deste_componente = helpers::milissegundos_entre_dois_clocks(instante_antes_ordenacao, instante_depois_ordenacao);
+            
+            auto instante_antes_clusterizacao = clock();
+            
             union_find *unf = new union_find(vertices_clusterizacao);
+
+            
 
             while (unf->total_conjuntos() > k) {
 
@@ -386,6 +420,9 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
                 nome_v = unf->encontrar(v);
             }
             
+            auto instante_depois_clusterizacao = clock();
+
+            segundos_clusterizacao_deste_componente = helpers::milissegundos_entre_dois_clocks(instante_antes_clusterizacao, instante_depois_clusterizacao);
             list<cluster_vertices*> clusters_componente = unf->clusters();
             this->clusters_dos_componentes[c] = clusters_componente;
             clusters.merge(clusters_componente);
@@ -401,6 +438,12 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             cluster.push_back(cluster_pequeno);
             this->clusters_dos_componentes[c] = cluster;
         }
+
+        this->total_milissegundos_execucao_clusterizacao += segundos_clusterizacao_deste_componente;
+        this->milissegundos_clusterizacao_por_componente.insert(make_pair(c, segundos_clusterizacao_deste_componente));
+
+        this->milissegundos_balanceamento_ordenacao_por_componente.insert(make_pair(c, segundos_balanceamento_ordenacao_deste_componente));
+        this->total_milissegundos_balanceamento += segundos_balanceamento_ordenacao_deste_componente;
     }
 
 
@@ -410,7 +453,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 componente_grafo* grafo::obter_vertices_alcancaveis_por_busca_em_largura(vertice* vertice_inicial_busca) {
     componente_grafo* c = new componente_grafo();
 
-    map < vertice*, bool> descobertos;
+    unordered_map < vertice*, bool> descobertos;
     vector<set<vertice*> > camadas;
 
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
@@ -424,17 +467,26 @@ componente_grafo* grafo::obter_vertices_alcancaveis_por_busca_em_largura(vertice
 
     int contador_camada = 0;
 
+    lista_arestas arestas_componente;
+    unordered_map<int, bool> arestas_encontradas;
+
     while (!camada_atual.empty()) {
         camada_atual.clear();
 
         for (set<vertice*>::iterator i = camadas[contador_camada].begin(); i != camadas[contador_camada].end(); ++i) {
             vertice *u = *i;
             c->push_back(u);
+            this->componentes_dos_vertices.insert(make_pair(u,c));
 
             list<aresta*> adj_u = u->lista_adjacencia();
 
             for (list<aresta*>::const_iterator j = adj_u.begin(); j != adj_u.end(); ++j) {
                 aresta *a = *j;
+                
+                if (arestas_encontradas.count(a->identificador_aresta()) == 0){
+                    arestas_encontradas.insert(make_pair(a->identificador_aresta(), true));
+                    arestas_componente.push_back(a);
+                }
 
                 vertice *v = a->extremidade_y();
 
@@ -452,26 +504,23 @@ componente_grafo* grafo::obter_vertices_alcancaveis_por_busca_em_largura(vertice
 
     }
 
+    this->arestas_dos_componentes.insert(make_pair(c, arestas_componente));
     return c;
 }
 
 void grafo::carregar_todos_componentes_grafo() {
     this->todos_componentes_grafo.clear();
 
-    list<vertice*> vertices_ja_presentes_em_componentes;
-
     for (list<vertice*>::const_iterator i = this->V.begin(); i != this->V.end(); ++i) {
 
-        if (find(vertices_ja_presentes_em_componentes.begin(), vertices_ja_presentes_em_componentes.end(), *i) == vertices_ja_presentes_em_componentes.end()) {
+        if (this->componentes_dos_vertices.count(*i) == 0) {
+            auto antes_busca_largura_componente = clock();
             componente_grafo *c = this->obter_vertices_alcancaveis_por_busca_em_largura(*i);
-
+            auto depois_busca_largura_componente = clock();
+            long segundos_busca_largura = helpers::milissegundos_entre_dois_clocks(antes_busca_largura_componente, depois_busca_largura_componente);
+            this->milissegundos_busca_em_largura_por_componente.insert(make_pair(c,segundos_busca_largura));
             this->todos_componentes_grafo.push_back(c);
-
-            for (list<vertice*>::const_iterator j = c->begin(); j != c->end(); ++j) {
-                vertices_ja_presentes_em_componentes.push_back(*j);
-            }
         }
-
     }
 }
 
@@ -576,16 +625,7 @@ map<bool, int> grafo::coletar_estatisticas_ultimo_commit_projetos(colecao_projet
 }
 
 aresta* grafo::aresta_equivalente_sentido_oposto(aresta* a) {
-
-    for (list<aresta*>::iterator i = this->A.begin(); i != this->A.end(); ++i) {
-        aresta *b = *i;
-
-        if (b->igual_sentido_oposto(*a)) {
-            return b;
-        }
-    }
-
-    return NULL;
+    return a->extremidade_y()->aresta_para_vertice(*(a->extremidade_x()));
 }
 
 // evita que a árvore geradora tenha clusters de tamanho 1 caso alguns vértices
@@ -704,33 +744,13 @@ list<aresta*> grafo::balancear_ocorrencias_vertices_em_empates_na_lista_ordenada
 }
 
 list<aresta*> grafo::lista_de_arestas_no_componente(componente_grafo* c) {
-    list<aresta*> arestas;
-
-    for (list<vertice*>::iterator i = c->begin(); i != c->end(); ++i) {
-        vertice *v = *i;
-
-        list<aresta*> l = v->lista_adjacencia();
-
-        for (list<aresta*>::const_iterator j = l.begin(); j != l.end(); ++j) {
-            aresta *a = *j;
-
-            aresta *a_oposta = this->aresta_equivalente_sentido_oposto(a);
-            if (a_oposta == NULL) {
-                helpers::levantar_erro_execucao("O grafo recebido é não direcionado. Verifique o arquivo com o grafo de entrada e certifique-se de que o grafo é não direcionado.");
-            }
-            if (find(arestas.begin(), arestas.end(), a_oposta) == arestas.end()) {
-                arestas.push_back(a);
-            }
-        }
-    }
-
-    return arestas;
+    return this->arestas_dos_componentes[c];
 }
 
 list<vertice*> grafo::lista_de_vertices_no_componente(componente_grafo* c) {
 
     list<vertice*> vertices;
-    
+
     for (list<vertice*>::iterator i = c->begin(); i != c->end(); ++i) {
         vertice *v = *i;
 
@@ -738,6 +758,6 @@ list<vertice*> grafo::lista_de_vertices_no_componente(componente_grafo* c) {
             vertices.push_back(v);
         }
     }
-    
+
     return vertices;
 }

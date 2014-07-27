@@ -19,6 +19,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <chrono>
 
 using namespace std;
 
@@ -44,6 +45,8 @@ public:
     static char * strptime_port_windows(const char *s, const char *format, struct tm *tm);
     static string sumarizar_entradas_dicionario(map<string, int> dicionario);
     static string sumarizar_entradas_dicionario(map<bool, int> dicionario);
+    static long segundos_entre_dois_clocks(clock_t &antes, clock_t &depois);
+    static long milissegundos_entre_dois_clocks(clock_t &antes, clock_t &depois);
 };
 
 

@@ -88,3 +88,8 @@ bool aresta::igual_mesmo_sentido(const aresta& outra) const {
 bool aresta::igual_sentido_oposto(const aresta& outra) const {
     return outra.extremidade_y() == this->extremidade_x() && outra.extremidade_x() == this->extremidade_y() && this->peso() == outra.peso();
 }
+
+int aresta::identificador_aresta() const {
+    return this->extremidade_x()->identificador()*this->extremidade_y()->identificador();
+}
+

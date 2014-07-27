@@ -25,6 +25,7 @@ public:
     bool igual_sentido_oposto(const aresta& outra) const;
     bool igual_mesmo_sentido(const aresta& outra) const;
     bool operator ==(const aresta& outra) const;
+    int identificador_aresta() const;
 private:
     pair<vertice*, vertice*> vertices_extremidades;
     int valor_conexao;

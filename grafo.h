@@ -15,6 +15,7 @@
 #include "aresta.h"
 #include "projeto_software.h"
 #include "union_find.h"
+#include <unordered_map>
 using namespace std;
 
 typedef set<aresta*> conjunto_arestas;
@@ -38,16 +39,31 @@ private:
     void carregar_todos_componentes_grafo();
     componente_grafo* obter_vertices_alcancaveis_por_busca_em_largura(vertice *vertice_inicial_busca);
     bool conjunto_forma_outlier(int tamanho_conjunto, int quantidade_clusters);
-    list<componente_grafo*> todos_componentes_grafo;
-    map<componente_grafo*, list<cluster_vertices*> > clusters_dos_componentes;
-    map<string, int> coletar_estatisticas_linguagens_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
-    map<string, int> coletar_estatisticas_devs_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
-    map<string, int> coletar_estatisticas_palavras_chave_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices, list<string> &stop_words);
-    map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
     aresta* aresta_equivalente_sentido_oposto(aresta* a);
     list<aresta*> balancear_ocorrencias_vertices_em_empates_na_lista_ordenada(lista_arestas &arestas);
     list<aresta*> lista_de_arestas_no_componente(componente_grafo *c);
     list<vertice*> lista_de_vertices_no_componente(componente_grafo *c);
+    
+    
+    list<componente_grafo*> todos_componentes_grafo;
+    map<componente_grafo*, list<cluster_vertices*> > clusters_dos_componentes;
+    unordered_map<vertice*, componente_grafo*> componentes_dos_vertices;
+    unordered_map<componente_grafo*, lista_arestas> arestas_dos_componentes; 
+    
+    
+    map<string, int> coletar_estatisticas_linguagens_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    map<string, int> coletar_estatisticas_devs_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    map<string, int> coletar_estatisticas_palavras_chave_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices, list<string> &stop_words);
+    map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    
+    map<componente_grafo*, int> milissegundos_clusterizacao_por_componente;
+    map<componente_grafo*, int> milissegundos_balanceamento_ordenacao_por_componente;
+    map<componente_grafo*, int> milissegundos_busca_em_largura_por_componente;
+    long total_milissegundos_execucao_clusterizacao;
+    long total_milissegundos_balanceamento;
+    long total_milissegundos_execucao_tempo_de_parede;
+    long total_milissegundos_execucao_tempo_de_cpu;
+    long total_milisegundos_carga_componentes;
 };
 
 #endif	/* GRAFO_H */

@@ -58,6 +58,14 @@ bool vertice::adjacente_a(vertice &outro) const {
     return this->adjacencia.find(outro.id) != this->adjacencia.end();
 }
 
+aresta* vertice::aresta_para_vertice(vertice& outro) const    {
+    if (this->adjacente_a(outro)){
+        return outro.adjacencia[this->id];
+    }
+    return NULL;
+}
+
+
 list<aresta*> vertice::lista_adjacencia() const {
     list<aresta*> l;
 

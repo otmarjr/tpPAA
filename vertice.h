@@ -24,7 +24,7 @@ public:
     list<aresta*> lista_adjacencia() const;
     bool adjacente_a(vertice &outro) const;
     bool operator ==(const vertice& outro) const;
-    
+    aresta* aresta_para_vertice(vertice &outro) const;
 private:
     int id;
     map<int,aresta*> adjacencia;
