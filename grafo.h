@@ -45,6 +45,9 @@ private:
     map<string, int> coletar_estatisticas_palavras_chave_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices, list<string> &stop_words);
     map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
     aresta* aresta_equivalente_sentido_oposto(aresta* a);
+    list<aresta*> balancear_ocorrencias_vertices_em_empates_na_lista_ordenada(lista_arestas &arestas);
+    list<aresta*> lista_de_arestas_no_componente(componente_grafo *c);
+    list<vertice*> lista_de_vertices_no_componente(componente_grafo *c);
 };
 
 #endif	/* GRAFO_H */
