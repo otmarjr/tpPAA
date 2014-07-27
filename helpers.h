@@ -31,6 +31,8 @@ public:
     static string& trim_string_a_esquerda(string &texto);
     static string& normalizar_string_para_minusculas(string& texto); //util para comparacoes de texto.
     static string& retirar_ultimo_caractere_se_presente(string& texto, char caractere);
+    static string para_caixa_alta(string &texto);
+    static string para_caixa_baixa(string &texto);
     static bool strings_sao_equivalentes(string& x, string& y);
     static int contar_numero_strings_em_comum(list<string> &A,
     list<string> &B);

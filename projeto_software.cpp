@@ -222,7 +222,9 @@ list<string> projeto_software::palavras_significativas_na_descricao(list<string>
     stop_words.sort();
 
     while (iss >> palavra_descricao) {
-        bool palava_descricao_e_stop_word = binary_search(stop_words.begin(), stop_words.end(), palavra_descricao);
+        bool palava_descricao_caixa_alta_e_stop_word = binary_search(stop_words.begin(), stop_words.end(), helpers::para_caixa_alta(palavra_descricao));
+        bool palava_descricao_caixa_baixa_e_stop_word = binary_search(stop_words.begin(), stop_words.end(), helpers::para_caixa_baixa(palavra_descricao));
+        bool palava_descricao_e_stop_word = palava_descricao_caixa_alta_e_stop_word || palava_descricao_caixa_baixa_e_stop_word;
 
         if (!palava_descricao_e_stop_word) {
             palavras_significativas.push_back(palavra_descricao);

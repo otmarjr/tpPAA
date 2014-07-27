@@ -49,6 +49,24 @@ string& helpers::normalizar_string_para_minusculas(string& texto) {
     return texto;
 }
 
+string helpers::para_caixa_alta(string& texto) {
+    string s = texto;
+    
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    
+    return s;
+}
+
+string helpers::para_caixa_baixa(string& texto) {
+    string s = texto;
+    
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    
+    return s;
+}
+
+
+
 bool helpers::strings_sao_equivalentes(string& x, string& y) {
     return normalizar_string_para_minusculas(x).compare(normalizar_string_para_minusculas(y)) == 0;
 }
@@ -521,7 +539,7 @@ string helpers::sumarizar_entradas_dicionario(map<bool, int> dicionario)  {
     int cont = 0;
     for (vector<entrada_map>::iterator j = entradas_maps.begin(); j != entradas_maps.end(); ++j) {
         bool chave = (*j).first;
-        ss << ++cont << ") " << chave << ": " << (*j).second << " ";
+        ss << ++cont << ") " << (chave? "Menos de um ano" : "Mais de um ano") << ": " << (*j).second << " ";
     }
 
     return ss.str();
