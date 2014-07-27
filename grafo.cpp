@@ -15,12 +15,16 @@
 #include <vector>
 #include <list>
 
+map<int, map<int,int> > ocorrencias_empate_cada_no_cabeca_por_peso;
+
+
 struct criterio_ordenacao_arestas_kruskal {
 
-    inline bool operator()(const aresta* x, const aresta* y) {
+    
+    bool operator()(const aresta* x, const aresta* y) {
         int peso_x = -x->peso();
         int peso_y = -y->peso();
-
+    
         return peso_x < peso_y;
     }
 };
@@ -304,8 +308,9 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
                     f_saida << std::endl << "\t\t\tVértices: ";
 
+                    cont=0;
                     for (cluster_vertices::iterator k = cluster->begin(); k != cluster->end(); ++k) {
-                        f_saida << (*k)->identificador() << " ";
+                        f_saida << ++cont<<") "<<(*k)->identificador() << " ";
                     }
 
                     map<string, int> lps_cluster = this->coletar_estatisticas_linguagens_projetos(projetos, lista);
@@ -314,16 +319,16 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
                     map<string, int> palavras_cluster = this->coletar_estatisticas_palavras_chave_projetos(projetos, lista, stop_words);
 
                     string texto_todos_devs = helpers::sumarizar_entradas_dicionario(devs_cluster);
-                    f_saida << std::endl << "\t\t\t" << " Total desenvolvedores: " << devs_cluster.size() << std::endl << "\t\t\t Frequência de cada desenvolvedor: " << texto_todos_devs;
+                    f_saida << std::endl << "\t\t\t" << " Total desenvolvedores: " << devs_cluster.size() << std::endl << "\t\t\t\t Frequência de cada desenvolvedor: " << texto_todos_devs;
 
                     string texto_todas_lps = helpers::sumarizar_entradas_dicionario(lps_cluster);
-                    f_saida << std::endl << "\t\t\t" << " Total linguagens de programação: " << lps_cluster.size() << std::endl << "\t\t\t Frequência de cada linguagem de programação: " << texto_todas_lps;
+                    f_saida << std::endl << "\t\t\t" << " Total linguagens de programação: " << lps_cluster.size() << std::endl << "\t\t\t\t Frequência de cada linguagem de programação: " << texto_todas_lps;
 
                     string texto_todas_keywords = helpers::sumarizar_entradas_dicionario(palavras_cluster);
-                    f_saida << std::endl << "\t\t\t" << " Total palavras chave: " << palavras_cluster.size() << std::endl << "\t\t\t Frequência de cada palavra chave: " << texto_todas_keywords;
+                    f_saida << std::endl << "\t\t\t" << " Total palavras chave: " << palavras_cluster.size() << std::endl << "\t\t\t\t Frequência de cada palavra chave: " << texto_todas_keywords;
 
                     string texto_todas_idades = helpers::sumarizar_entradas_dicionario(idades_cluster);
-                    f_saida << std::endl << "\t\t\t" << " Total critérios idade: " << idades_cluster.size() << std::endl << "\t\t\t Frequência projetos com commit há menos de um ano: " << texto_todas_idades;
+                    f_saida << std::endl << "\t\t\t" << " Total critérios idade: " << idades_cluster.size() << std::endl << "\t\t\t\t Frequência projetos com commit há menos de um ano: " << texto_todas_idades;
 
                 }
             }
@@ -375,14 +380,46 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         }
 
         arestas.sort(criterio_ordenacao_arestas_kruskal());
+        
+        // Contabiliza a distribuição de pesos diferentes:
+        int ultimo_peso = 0;
+        for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
+            aresta *a = *j;
+            
+            if (a->peso() != ultimo_peso){
+                ultimo_peso = a->peso();
+                list<aresta*> l;
+                list<vertice*> lv;
+                
+                l.push_back(a);
+                lv.push_back(a->extremidade_x());
+                lv.push_back(a->extremidade_y());
+                distribuicao_pesos_quantidades_arestas[ultimo_peso]=1;
+                distribuicao_pesos_arestas.insert(make_pair(ultimo_peso, l));
+                distribuicao_pesos_vertices.insert(make_pair(ultimo_peso, lv));
+                
+            }
+            else{
+                distribuicao_pesos_quantidades_arestas[ultimo_peso]+=1;
+                distribuicao_pesos_arestas[ultimo_peso].push_back(a);
+                
+                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_x() ) == distribuicao_pesos_vertices[ultimo_peso].end()){
+                    distribuicao_pesos_vertices[ultimo_peso].push_back(a->extremidade_x());
+                }
+                
+                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_y() ) == distribuicao_pesos_vertices[ultimo_peso].end()){
+                    distribuicao_pesos_vertices[ultimo_peso].push_back(a->extremidade_y());
+                }
+            }
+        }
+        
 
-        /*
         for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
             stringstream ss;
             ss << (*j)->extremidade_x()->identificador() << "->" << (*j)->extremidade_y()->identificador() << " peso: " << (*j)->peso();
             ESCREVER_TRACE(ss.str());
         }
-*/
+
         if (!this->conjunto_forma_outlier(arestas.size(), k)) {
             union_find *unf = new union_find(vertices_clusterizacao);
 
