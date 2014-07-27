@@ -15,16 +15,14 @@
 #include <vector>
 #include <list>
 
-map<int, map<int,int> > ocorrencias_empate_cada_no_cabeca_por_peso;
-
+map<int, map<int, int> > ocorrencias_empate_cada_no_cabeca_por_peso;
 
 struct criterio_ordenacao_arestas_kruskal {
 
-    
     bool operator()(const aresta* x, const aresta* y) {
         int peso_x = -x->peso();
         int peso_y = -y->peso();
-    
+
         return peso_x < peso_y;
     }
 };
@@ -308,9 +306,9 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
                     f_saida << std::endl << "\t\t\tVértices: ";
 
-                    cont=0;
+                    cont = 0;
                     for (cluster_vertices::iterator k = cluster->begin(); k != cluster->end(); ++k) {
-                        f_saida << ++cont<<") "<<(*k)->identificador() << " ";
+                        f_saida << ++cont << ") " << (*k)->identificador() << " ";
                     }
 
                     map<string, int> lps_cluster = this->coletar_estatisticas_linguagens_projetos(projetos, lista);
@@ -380,41 +378,113 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         }
 
         arestas.sort(criterio_ordenacao_arestas_kruskal());
-        
+
         // Contabiliza a distribuição de pesos diferentes:
         int ultimo_peso = 0;
+        map<vertice*, map<int, lista_arestas> > arestas_partindo_vertice;
+        map<int, map<vertice*, lista_arestas> > pesos_e_vertices;
+
+
         for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
             aresta *a = *j;
-            
-            if (a->peso() != ultimo_peso){
+
+            if (a->peso() != ultimo_peso) {
                 ultimo_peso = a->peso();
                 list<aresta*> l;
                 list<vertice*> lv;
-                
+
                 l.push_back(a);
                 lv.push_back(a->extremidade_x());
                 lv.push_back(a->extremidade_y());
-                distribuicao_pesos_quantidades_arestas[ultimo_peso]=1;
+                distribuicao_pesos_quantidades_arestas[ultimo_peso] = 1;
                 distribuicao_pesos_arestas.insert(make_pair(ultimo_peso, l));
                 distribuicao_pesos_vertices.insert(make_pair(ultimo_peso, lv));
-                
-            }
-            else{
-                distribuicao_pesos_quantidades_arestas[ultimo_peso]+=1;
+
+            } else {
+                distribuicao_pesos_quantidades_arestas[ultimo_peso] += 1;
                 distribuicao_pesos_arestas[ultimo_peso].push_back(a);
-                
-                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_x() ) == distribuicao_pesos_vertices[ultimo_peso].end()){
+
+                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_x()) == distribuicao_pesos_vertices[ultimo_peso].end()) {
                     distribuicao_pesos_vertices[ultimo_peso].push_back(a->extremidade_x());
                 }
-                
-                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_y() ) == distribuicao_pesos_vertices[ultimo_peso].end()){
+
+                if (find(distribuicao_pesos_vertices[ultimo_peso].begin(), distribuicao_pesos_vertices[ultimo_peso].end(), a->extremidade_y()) == distribuicao_pesos_vertices[ultimo_peso].end()) {
                     distribuicao_pesos_vertices[ultimo_peso].push_back(a->extremidade_y());
                 }
             }
-        }
-        
 
-        for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
+            if (arestas_partindo_vertice.count(a->extremidade_x()) == 0) {
+                lista_arestas la;
+                la.push_back(a);
+                map<int, lista_arestas> m;
+                m.insert(make_pair(a->peso(), la));
+
+                arestas_partindo_vertice[a->extremidade_x()] = m;
+            } else {
+
+                map<int, lista_arestas> m = arestas_partindo_vertice[a->extremidade_x()];
+
+                if (m.count(a->peso()) == 0) {
+                    lista_arestas la;
+                    la.push_back(a);
+                    m.insert(make_pair(a->peso(), la));
+                } else {
+                    m[a->peso()].push_back(a);
+                }
+
+                arestas_partindo_vertice[a->extremidade_x()] = m;
+            }
+
+            if (pesos_e_vertices[a->peso()].count(a->extremidade_x()) == 0) {
+                map<vertice*, lista_arestas> m;
+                lista_arestas la;
+                la.push_back(a);
+                pesos_e_vertices[a->peso()].insert(make_pair(a->extremidade_x(), la));
+            } else {
+                pesos_e_vertices[a->peso()][a->extremidade_x()].push_back(a);
+            }
+        }
+
+        list<aresta*> reordenacao;
+
+
+
+        for (map<int, lista_arestas>::reverse_iterator j = distribuicao_pesos_arestas.rbegin(); j != distribuicao_pesos_arestas.rend(); ++j) {
+            lista_arestas arestas_com_peso_atual = j->second;
+            list<vertice*> vertices_das_arestas = distribuicao_pesos_vertices[j->first];
+
+            int peso_atual = j->first;
+
+            if (vertices_das_arestas.size() != 2 * arestas_com_peso_atual.size()) {
+
+                list<aresta*> rearranjo;
+
+                bool ainda_ha_aresta_pra_reordenar = true;
+
+                while (ainda_ha_aresta_pra_reordenar) {
+                    ainda_ha_aresta_pra_reordenar = false;
+
+                    for (map<vertice*, lista_arestas>::iterator k = pesos_e_vertices[peso_atual].begin(); k != pesos_e_vertices[peso_atual].end(); ++k) {
+
+
+                        if (k->second.size() > 0) {
+                            rearranjo.push_back(k->second.front());
+                            k->second.pop_front();
+                        }
+
+                        ainda_ha_aresta_pra_reordenar = ainda_ha_aresta_pra_reordenar || k->second.size() > 0;
+                    }
+
+                }
+
+                copy(rearranjo.begin(), rearranjo.end(), back_inserter(reordenacao));
+            } else {
+                copy(arestas_com_peso_atual.begin(), arestas_com_peso_atual.end(), back_inserter(reordenacao));
+            }
+        }
+
+
+        for (list<aresta*>::const_iterator j = reordenacao.begin(); j != reordenacao.end(); ++j) {
             stringstream ss;
             ss << (*j)->extremidade_x()->identificador() << "->" << (*j)->extremidade_y()->identificador() << " peso: " << (*j)->peso();
             ESCREVER_TRACE(ss.str());
@@ -424,7 +494,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             union_find *unf = new union_find(vertices_clusterizacao);
 
             while (unf->total_conjuntos() > k) {
-                aresta* menor_aresta = arestas.front();
+                aresta* menor_aresta = reordenacao.front();
 
                 arestas.pop_front();
 
@@ -582,7 +652,7 @@ map<string, int> grafo::coletar_estatisticas_palavras_chave_projetos(colecao_pro
     for (list<vertice*>::iterator i = vertices.begin(); i != vertices.end(); ++i) {
 
         int id = (*i)->identificador();
-        
+
         if (projetos.count(id) == 0) {
             stringstream ss;
             ss << "As estatísticas não são precisas porque o projeto " << id << " não foi encontrado no arquivo de informações dos projetos.";

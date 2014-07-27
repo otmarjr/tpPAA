@@ -19,6 +19,7 @@ using namespace std;
 
 typedef set<aresta*> conjunto_arestas;
 typedef list<vertice*> componente_grafo;
+typedef list<aresta*> lista_arestas;
 
 class grafo {
 public:
@@ -45,7 +46,7 @@ private:
     map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
     aresta* aresta_equivalente_sentido_oposto(aresta* a);
     map<int, int> distribuicao_pesos_quantidades_arestas;
-    map<int, list<aresta*> > distribuicao_pesos_arestas;
+    map<int, lista_arestas> distribuicao_pesos_arestas;
     map<int, list<vertice*> > distribuicao_pesos_vertices;
 };
 
