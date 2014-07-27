@@ -487,13 +487,6 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             }
         }
 
-
-        for (list<aresta*>::const_iterator j = reordenacao.begin(); j != reordenacao.end(); ++j) {
-            stringstream ss;
-            ss << (*j)->extremidade_x()->identificador() << "->" << (*j)->extremidade_y()->identificador() << " peso: " << (*j)->peso();
-            ESCREVER_TRACE(ss.str());
-        }
-
         if (!this->conjunto_forma_outlier(reordenacao.size(), k)) {
 
             union_find *unf = new union_find(vertices_clusterizacao);
