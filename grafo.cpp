@@ -376,12 +376,13 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
         arestas.sort(criterio_ordenacao_arestas_kruskal());
 
+        /*
         for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
             stringstream ss;
             ss << (*j)->extremidade_x()->identificador() << "->" << (*j)->extremidade_y()->identificador() << " peso: " << (*j)->peso();
             ESCREVER_TRACE(ss.str());
         }
-
+*/
         if (!this->conjunto_forma_outlier(arestas.size(), k)) {
             union_find *unf = new union_find(vertices_clusterizacao);
 
