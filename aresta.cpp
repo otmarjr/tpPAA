@@ -27,8 +27,8 @@ int aresta::peso() const {
 string aresta::para_string() const {
     ostringstream oss;
 
-    oss << "[{" << this->extremidade_x()->para_string();
-    oss << "," << this->extremidade_y()->para_string() << "}";
+    oss << "[{" << this->extremidade_x()->identificador();
+    oss << "," << this->extremidade_y()->identificador() << "}";
     oss << "," << this->peso() << "]";
 
     return oss.str();
@@ -75,4 +75,16 @@ int aresta::total_de_arestas_na_lista(list<vertice*>& l, bool contar_arestas_par
     
     total = pares_do_conjunto_adicionados.size();
     return total;
+}
+
+bool aresta::operator==(const aresta& outra) const {
+    return this->igual_mesmo_sentido(outra) || this->igual_sentido_oposto(outra);
+}
+
+bool aresta::igual_mesmo_sentido(const aresta& outra) const {
+    return outra.extremidade_x() == this->extremidade_x() &&outra.extremidade_y() == this->extremidade_y() && this->peso() == outra.peso();
+}
+
+bool aresta::igual_sentido_oposto(const aresta& outra) const {
+    return outra.extremidade_y() == this->extremidade_x() && outra.extremidade_x() == this->extremidade_y() && this->peso() == outra.peso();
 }

@@ -526,3 +526,7 @@ string helpers::sumarizar_entradas_dicionario(map<bool, int> dicionario)  {
 
     return ss.str();
 }
+
+void helpers::escrever_alerta(string mensagem) {
+    cout<<"ALERTA DE EXECUÇÃO: "<<mensagem<<std::endl;
+}

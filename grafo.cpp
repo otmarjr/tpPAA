@@ -297,12 +297,12 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
                 for (list<cluster_vertices*>::iterator j = clusters_comp.begin(); j != clusters_comp.end(); ++j) {
                     cluster_vertices *cluster = *j;
                     list<vertice*> lista(cluster->begin(), cluster->end());
-                    int total_arestas_cluster_internas = aresta::total_de_arestas_na_lista(lista,false);
+                    int total_arestas_cluster_internas = aresta::total_de_arestas_na_lista(lista, false);
                     int total_arestas_cluster_externas = aresta::total_de_arestas_na_lista(lista, true);
-                    
-                    f_saida << std::endl << "\t\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértices e " << total_arestas_cluster_internas << " arestas internas e "<<(total_arestas_cluster_externas-total_arestas_cluster_internas)<<" externas.";
 
-                    f_saida << std::endl<< "\t\t\tVértices: ";
+                    f_saida << std::endl << "\t\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértices e " << total_arestas_cluster_internas << " arestas internas e " << (total_arestas_cluster_externas - total_arestas_cluster_internas) << " externas.";
+
+                    f_saida << std::endl << "\t\t\tVértices: ";
 
                     for (cluster_vertices::iterator k = cluster->begin(); k != cluster->end(); ++k) {
                         f_saida << (*k)->identificador() << " ";
@@ -355,19 +355,32 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         for (list<vertice*>::iterator i = c->begin(); i != c->end(); ++i) {
             vertice *v = *i;
 
+            if (find(vertices_clusterizacao.begin(), vertices_clusterizacao.end(), v) == vertices_clusterizacao.end()) {
+                vertices_clusterizacao.push_back(v);
+            }
+
             list<aresta*> l = v->lista_adjacencia();
 
             for (list<aresta*>::const_iterator j = l.begin(); j != l.end(); ++j) {
                 aresta *a = *j;
-                arestas.push_back(a);
 
-                if (find(vertices_clusterizacao.begin(), vertices_clusterizacao.end(), v) == vertices_clusterizacao.end()) {
-                    vertices_clusterizacao.push_back(v);
+                aresta *a_oposta = this->aresta_equivalente_sentido_oposto(a);
+                if (a_oposta == NULL) {
+                    helpers::levantar_erro_execucao("O grafo recebido é não direcionado. Verifique o arquivo com o grafo de entrada e certifique-se de que o grafo é não direcionado.");
+                }
+                if (find(arestas.begin(), arestas.end(), a_oposta) == arestas.end()) {
+                    arestas.push_back(a);
                 }
             }
         }
 
         arestas.sort(criterio_ordenacao_arestas_kruskal());
+
+        for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
+            stringstream ss;
+            ss << (*j)->extremidade_x()->identificador() << "->" << (*j)->extremidade_y()->identificador() << " peso: " << (*j)->peso();
+            ESCREVER_TRACE(ss.str());
+        }
 
         if (!this->conjunto_forma_outlier(arestas.size(), k)) {
             union_find *unf = new union_find(vertices_clusterizacao);
@@ -503,6 +516,16 @@ map<string, int> grafo::coletar_estatisticas_devs_projetos(colecao_projetos_soft
 map<string, int> grafo::coletar_estatisticas_linguagens_projetos(colecao_projetos_software& projetos, list<vertice*> &vertices) {
     map<string, int> estatisticas;
     for (list<vertice*>::iterator i = vertices.begin(); i != vertices.end(); ++i) {
+
+        int id = (*i)->identificador();
+
+        if (projetos.count(id) == 0) {
+            stringstream ss;
+            ss << "As estatísticas não são precisas porque o projeto " << id << " não foi encontrado no arquivo de informações dos projetos.";
+            helpers::escrever_alerta(ss.str());
+            continue;
+        }
+
         projeto_software *p = projetos[(*i)->identificador()];
 
         if (estatisticas.find(p->linguagem_programacao()) == estatisticas.end()) {
@@ -519,6 +542,16 @@ map<string, int> grafo::coletar_estatisticas_palavras_chave_projetos(colecao_pro
 
     map<string, int> estatisticas;
     for (list<vertice*>::iterator i = vertices.begin(); i != vertices.end(); ++i) {
+
+        int id = (*i)->identificador();
+        
+        if (projetos.count(id) == 0) {
+            stringstream ss;
+            ss << "As estatísticas não são precisas porque o projeto " << id << " não foi encontrado no arquivo de informações dos projetos.";
+            helpers::escrever_alerta(ss.str());
+            continue;
+        }
+
         projeto_software *p = projetos[(*i)->identificador()];
 
         list<string> palavras_chave = p->palavras_significativas_na_descricao(stop_words);
@@ -538,6 +571,15 @@ map<string, int> grafo::coletar_estatisticas_palavras_chave_projetos(colecao_pro
 map<bool, int> grafo::coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software& projetos, list<vertice*> &vertices) {
     map<bool, int> estatisticas;
     for (list<vertice*>::iterator i = vertices.begin(); i != vertices.end(); ++i) {
+
+        int id = (*i)->identificador();
+        if (projetos.count(id) == 0) {
+            stringstream ss;
+            ss << "As estatísticas não são precisas porque o projeto " << id << " não foi encontrado no arquivo de informações dos projetos.";
+            helpers::escrever_alerta(ss.str());
+            continue;
+        }
+
         projeto_software *p = projetos[(*i)->identificador()];
 
         if (estatisticas.find(p->modificado_ultimo_ano()) == estatisticas.end()) {
@@ -548,6 +590,19 @@ map<bool, int> grafo::coletar_estatisticas_ultimo_commit_projetos(colecao_projet
     }
 
     return estatisticas;
+}
+
+aresta* grafo::aresta_equivalente_sentido_oposto(aresta* a) {
+
+    for (list<aresta*>::iterator i = this->A.begin(); i != this->A.end(); ++i) {
+        aresta *b = *i;
+
+        if (b->igual_sentido_oposto(*a)) {
+            return b;
+        }
+    }
+
+    return NULL;
 }
 
 

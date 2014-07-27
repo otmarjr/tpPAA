@@ -22,6 +22,9 @@ public:
     vertice* extremidade_x() const;
     vertice* extremidade_y() const;
     static int total_de_arestas_na_lista(list<vertice*> &l, bool contar_arestas_para_vertices_fora_do_conjunto);
+    bool igual_sentido_oposto(const aresta& outra) const;
+    bool igual_mesmo_sentido(const aresta& outra) const;
+    bool operator ==(const aresta& outra) const;
 private:
     pair<vertice*, vertice*> vertices_extremidades;
     int valor_conexao;

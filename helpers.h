@@ -35,6 +35,7 @@ public:
     static int contar_numero_strings_em_comum(list<string> &A,
     list<string> &B);
     static void levantar_erro_execucao(string mensagem);
+    static void escrever_alerta(string mensagem);
     static list<string> carregar_linhas_arquivo(string caminho_arquivo);
     static bool string_e_inteiro(string texto);
     static int string_para_inteiro(string& texto);
