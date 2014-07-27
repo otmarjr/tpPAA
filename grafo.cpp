@@ -384,6 +384,9 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         map<vertice*, map<int, lista_arestas> > arestas_partindo_vertice;
         map<int, map<vertice*, lista_arestas> > pesos_e_vertices;
 
+        map<int, int> distribuicao_pesos_quantidades_arestas;
+        map<int, lista_arestas> distribuicao_pesos_arestas;
+        map<int, list<vertice*> > distribuicao_pesos_vertices;
 
         for (list<aresta*>::const_iterator j = arestas.begin(); j != arestas.end(); ++j) {
             aresta *a = *j;
@@ -447,10 +450,11 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
         list<aresta*> reordenacao;
 
-
+        int tot_arestas = arestas.size();
 
         for (map<int, lista_arestas>::reverse_iterator j = distribuicao_pesos_arestas.rbegin(); j != distribuicao_pesos_arestas.rend(); ++j) {
             lista_arestas arestas_com_peso_atual = j->second;
+
             list<vertice*> vertices_das_arestas = distribuicao_pesos_vertices[j->first];
 
             int peso_atual = j->first;
@@ -490,10 +494,12 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             ESCREVER_TRACE(ss.str());
         }
 
-        if (!this->conjunto_forma_outlier(arestas.size(), k)) {
+        if (!this->conjunto_forma_outlier(reordenacao.size(), k)) {
+
             union_find *unf = new union_find(vertices_clusterizacao);
 
             while (unf->total_conjuntos() > k) {
+
                 aresta* menor_aresta = reordenacao.front();
 
                 reordenacao.pop_front();
