@@ -496,7 +496,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             while (unf->total_conjuntos() > k) {
                 aresta* menor_aresta = reordenacao.front();
 
-                arestas.pop_front();
+                reordenacao.pop_front();
 
                 vertice* u = menor_aresta->extremidade_x();
                 vertice* v = menor_aresta->extremidade_y();
