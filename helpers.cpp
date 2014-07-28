@@ -554,6 +554,6 @@ long helpers::segundos_entre_dois_clocks(clock_t& antes, clock_t& depois) {
 }
 
 long helpers::milissegundos_entre_dois_clocks(clock_t& antes, clock_t& depois) {
-    const int CLOCKS_PER_MSEC = CLOCKS_PER_SEC*1000;
+    const int CLOCKS_PER_MSEC = CLOCKS_PER_SEC/1000;
         return (depois-antes)/CLOCKS_PER_MSEC;
 }
