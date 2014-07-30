@@ -16,6 +16,9 @@
 #include "projeto_software.h"
 #include "union_find.h"
 #include <unordered_map>
+#include <limits>
+#include <vector>
+
 using namespace std;
 
 typedef set<aresta*> conjunto_arestas;
@@ -55,6 +58,18 @@ private:
     map<string, int> coletar_estatisticas_devs_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
     map<string, int> coletar_estatisticas_palavras_chave_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices, list<string> &stop_words);
     map<bool, int> coletar_estatisticas_ultimo_commit_projetos(colecao_projetos_software &projetos, list<vertice*> &vertices);
+    
+    int total_clusters;
+    int total_vertices_em_clusters;
+    int total_arestas_em_clusters;
+
+    int max_vertices_em_um_cluster;
+    int min_vertices_em_um_cluster;
+    int max_arestas_em_um_cluster;
+    int min_arestas_em_um_cluster;
+
+    vector<int> total_vertices_por_cluster;
+    vector<int> total_arestas_por_cluster;
     
     map<componente_grafo*, int> milissegundos_clusterizacao_por_componente;
     map<componente_grafo*, int> milissegundos_balanceamento_ordenacao_por_componente;

@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <set>
 class aresta; // decleração atencipada para evitar dependência circular.
 
 using namespace std;
@@ -29,6 +30,8 @@ private:
     int id;
     map<int,aresta*> adjacencia;
 };
+
+typedef set<vertice*> cluster_vertices;
 
 #endif	/* VERTICE_H */
 

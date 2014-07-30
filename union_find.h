@@ -15,7 +15,7 @@
 #include "vertice.h"
 
 typedef int nome_conjunto_vertices;
-typedef set<vertice*> cluster_vertices;
+
 
 class union_find {
 public:

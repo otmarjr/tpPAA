@@ -212,6 +212,31 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
     this->total_milissegundos_execucao_tempo_de_parede = (chrono::duration_cast<chrono::milliseconds>(depois_clusterizacao - antes_clusterizacao).count());
     this->total_milissegundos_execucao_tempo_de_cpu = helpers::milissegundos_entre_dois_clocks(instance_cpu_antes, instante_cpu_depois);
 
+    
+    
+    
+    int mediana_arestas = 0; 
+    
+    if (this->total_arestas_em_clusters > 1){
+        for (int i=0;i<total_clusters;++i) cout<<total_arestas_por_cluster[i]<<" ";
+        cout<<std::endl;
+        sort(this->total_arestas_por_cluster.begin(), this->total_arestas_por_cluster.end());
+        for (int i=0;i<total_clusters;++i) cout<<total_arestas_por_cluster[i]<<" ";
+        cout<<std::endl;
+        mediana_arestas = this->total_arestas_por_cluster[this->total_clusters/2];
+    }
+    
+    int mediana_vertices = 0; 
+    
+    if (this->total_vertices_em_clusters > 1){
+        for (int i=0;i<total_clusters;++i) cout<<total_vertices_por_cluster[i]<<" ";
+        cout<<std::endl;
+        sort(this->total_vertices_por_cluster.begin(), this->total_vertices_por_cluster.end());
+        for (int i=0;i<total_clusters;++i) cout<<total_vertices_por_cluster[i]<<" ";
+        cout<<std::endl;
+        mediana_vertices = this->total_vertices_por_cluster[this->total_clusters/2];
+    }
+    
     ofstream f_saida(caminho_arquivo_clusters.c_str());
 
     if (!f_saida.good() || !f_saida.is_open()) {
@@ -235,70 +260,86 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
             }
         }
 
-        auto imprimir = [&f_saida] (char caractere, int comprimento) { for(auto i=0;i<comprimento;++i) f_saida << caractere; f_saida<<std::endl;};
-        
-        f_saida << "Análise da clusterização"<<std::endl;
-        
+        auto imprimir = [&f_saida] (char caractere, int comprimento) {
+            for (auto i = 0; i < comprimento; ++i) f_saida << caractere;
+            f_saida << std::endl;
+        };
+
+        f_saida << "Análise da clusterização" << std::endl;
+
         imprimir('=', 50);
-        
-        f_saida<<"Estatísticas globais " << std::endl;
-        
+
+        f_saida << "Estatísticas globais " << std::endl;
+
         imprimir('-', 50);
 
         f_saida << "Total de vértices (n): " << this->V.size();
         f_saida << std::endl << "Total de arestas (m): " << this->A.size() / 2; // grafo não direcionado
         f_saida << std::endl << "Total de componentes conectados do grafo: " << this->todos_componentes_grafo.size();
+        f_saida << std::endl << "Total de clusters gerados: "<<this->total_clusters;
+        f_saida << std::endl << "Total de vértices em clusters: "<<this->total_vertices_em_clusters;
+        f_saida << std::endl << "Total de arestas em clusters: "<<this->total_arestas_em_clusters;
+        f_saida << std::endl << "Máximo nº vértices em um cluster: " << this->max_vertices_em_um_cluster;
+        f_saida << std::endl << "Média de vértices por cluster: "<<(this->total_vertices_em_clusters/this->total_clusters);
+        f_saida << std::endl << "Mediana nº vértices por cluster: "<<mediana_vertices;
+        f_saida << std::endl << "Menor nº vértices em um cluster: " << this->min_vertices_em_um_cluster;
         
-        f_saida << std::endl<< std::endl <<"Tempos de execução"<<std::endl;
+        f_saida << std::endl << "Máximo nº arestas em um cluster: " << this->max_arestas_em_um_cluster;
+        f_saida << std::endl << "Média de arestas por cluster: "<<(this->total_arestas_em_clusters/this->total_clusters);
+        f_saida << std::endl << "Mediana nº arestas por cluster: "<<mediana_arestas;
+        f_saida << std::endl << "Menor nº arestas em um cluster: " << this->min_arestas_em_um_cluster;
         
+
+        f_saida << std::endl << std::endl << "Tempos de execução" << std::endl;
+
         imprimir('-', 50);
-        
+
         f_saida << "Milissegundos de tempo de parede decorridos com execução: " << this->total_milissegundos_execucao_tempo_de_parede;
-        f_saida << std::endl <<"Milissegundos de tempo de CPU decorridos com execução: " << this->total_milissegundos_execucao_tempo_de_cpu;
-        f_saida << std::endl <<"Milissegundos de tempo de CPU gastos com busca de componentes via busca em largura: " << this->total_milisegundos_carga_componentes;
-        f_saida << std::endl <<"Milissegundos de tempo de CPU gastos com balanceamento da ordenação: " << this->total_milissegundos_balanceamento;
-        f_saida << std::endl <<"Milissegundos de tempo de CPU gastos com clusterização: " << this->total_milissegundos_execucao_clusterizacao;
-        
+        f_saida << std::endl << "Milissegundos de tempo de CPU decorridos com execução: " << this->total_milissegundos_execucao_tempo_de_cpu;
+        f_saida << std::endl << "Milissegundos de tempo de CPU gastos com busca de componentes via busca em largura: " << this->total_milisegundos_carga_componentes;
+        f_saida << std::endl << "Milissegundos de tempo de CPU gastos com balanceamento da ordenação: " << this->total_milissegundos_balanceamento;
+        f_saida << std::endl << "Milissegundos de tempo de CPU gastos com clusterização: " << this->total_milissegundos_execucao_clusterizacao;
+
 
         map<string, int> ocorrencias_globais_lps = this->coletar_estatisticas_linguagens_projetos(projetos, this->V);
         map<string, int> ocorrencias_globais_devs = this->coletar_estatisticas_devs_projetos(projetos, this->V);
         map<bool, int> ocorrencias_globais_idade = this->coletar_estatisticas_ultimo_commit_projetos(projetos, this->V);
         map<string, int> ocorrencias_globais_palavras_chave = this->coletar_estatisticas_palavras_chave_projetos(projetos, this->V, stop_words);
 
-        f_saida << std::endl << std::endl <<"Detalhes dos projetos do grafo"<<std::endl;
+        f_saida << std::endl << std::endl << "Detalhes dos projetos do grafo" << std::endl;
         imprimir('-', 50);
         string lista_todos_devs = helpers::sumarizar_entradas_dicionario(ocorrencias_globais_devs);
-        f_saida << std::endl<< "\t" << " Total desenvolvedores: " << ocorrencias_globais_devs.size() << std::endl << "\t\t Frequência de cada desenvolvedor: " << lista_todos_devs;
+        f_saida << std::endl << "\t" << " Total desenvolvedores: " << ocorrencias_globais_devs.size() << std::endl << "\t\t Frequência de cada desenvolvedor: " << lista_todos_devs;
 
         string lista_todas_lps = helpers::sumarizar_entradas_dicionario(ocorrencias_globais_lps);
-        f_saida << std::endl<< "\t" << " Total linguagens de programação: " << ocorrencias_globais_lps.size() << std::endl << "\t\t Frequência de cada linguagem de programação: " << lista_todas_lps;
+        f_saida << std::endl << "\t" << " Total linguagens de programação: " << ocorrencias_globais_lps.size() << std::endl << "\t\t Frequência de cada linguagem de programação: " << lista_todas_lps;
 
         string lista_todas_palavras_chave = helpers::sumarizar_entradas_dicionario(ocorrencias_globais_palavras_chave);
-        f_saida << std::endl<< "\t" << " Total palavras chave: " << ocorrencias_globais_palavras_chave.size() << std::endl << "\t\t Frequência de cada palavra chave: " << lista_todas_palavras_chave;
+        f_saida << std::endl << "\t" << " Total palavras chave: " << ocorrencias_globais_palavras_chave.size() << std::endl << "\t\t Frequência de cada palavra chave: " << lista_todas_palavras_chave;
 
         string lista_todas_idades = helpers::sumarizar_entradas_dicionario(ocorrencias_globais_idade);
-        f_saida << std::endl<< "\t" << " Total critérios idade: " << ocorrencias_globais_idade.size() << std::endl << "\t\t Frequência desde último commit no projeto: " << lista_todas_idades;
+        f_saida << std::endl << "\t" << " Total critérios idade: " << ocorrencias_globais_idade.size() << std::endl << "\t\t Frequência desde último commit no projeto: " << lista_todas_idades;
 
-        f_saida<<std::endl<<std::endl;
-        imprimir('=',50);
-        f_saida<<"Resultados da Clusterização"<<std::endl;
-        imprimir('-',50);
+        f_saida << std::endl << std::endl;
+        imprimir('=', 50);
+        f_saida << "Resultados da Clusterização" << std::endl;
+        imprimir('-', 50);
 
         int cont = 0;
         for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
             int total_arestas = aresta::total_de_arestas_na_lista(**i, false);
-            imprimir('-',50);
+            imprimir('-', 50);
             f_saida << "Componente " << ++cont << " - Total de " << (*i)->size() << " vértice(s) e " << total_arestas << " aresta(s)." << std::endl;
-            imprimir('-',50);
-            
-            f_saida << std::endl <<"Tempos de execução"<<std::endl;
-            imprimir('-',50);
+            imprimir('-', 50);
+
+            f_saida << std::endl << "Tempos de execução" << std::endl;
+            imprimir('-', 50);
             f_saida << "Milissegundos de tempo de CPU gastos com busca de componentes via busca em largura: " << this->milissegundos_busca_em_largura_por_componente[*i];
             f_saida << std::endl << "Milissegundos de tempo de CPU gastos com balanceamento da ordenação deste componente : " << this->milissegundos_balanceamento_ordenacao_por_componente[*i];
             f_saida << std::endl << "Milissegundos de tempo de CPU gastos com clusterização deste componente: " << this->milissegundos_clusterizacao_por_componente[*i];
 
             f_saida << std::endl << "Vértices no componente: ";
-            
+
             int cont_vertice = 0;
 
             for (componente_grafo::iterator j = (*i)->begin(); j != (*i)->end(); ++j) {
@@ -306,10 +347,10 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
             }
 
             f_saida << std::endl;
-            imprimir('-',50);
-            
-            f_saida << std::endl << "Detalhes dos projetos do componente "<<cont<< std::endl;
-            imprimir('-',50);
+            imprimir('-', 50);
+
+            f_saida << std::endl << "Detalhes dos projetos do componente " << cont << std::endl;
+            imprimir('-', 50);
 
             map<string, int> lps_componente = this->coletar_estatisticas_linguagens_projetos(projetos, **i);
             map<string, int> devs_componente = this->coletar_estatisticas_devs_projetos(projetos, **i);
@@ -330,17 +371,17 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
 
             list<cluster_vertices*> clusters_comp = this->clusters_dos_componentes[*i];
 
-            f_saida << std::endl << std::endl << "Clusters do componente "<<cont<<" ";
+            f_saida << std::endl << std::endl << "Clusters do componente " << cont << " ";
 
             bool conjunto_de_outliers = this->conjunto_forma_outlier(total_arestas, quantidade_clusters);
 
             if (conjunto_de_outliers) {
-                f_saida << " - Nenhum, pois não possui número de arestas suficiente."<<std::endl;
+                f_saida << " - Nenhum, pois não possui número de arestas suficiente." << std::endl;
             } else {
                 f_saida << " - " << clusters_comp.size() << " gerados.";
 
-                f_saida<<std::endl;
-                imprimir('-',50);
+                f_saida << std::endl;
+                imprimir('-', 50);
                 int contador_clusters = 0;
 
                 for (list<cluster_vertices*>::iterator j = clusters_comp.begin(); j != clusters_comp.end(); ++j) {
@@ -349,9 +390,10 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
                     int total_arestas_cluster_internas = aresta::total_de_arestas_na_lista(lista, false);
                     int total_arestas_cluster_externas = aresta::total_de_arestas_na_lista(lista, true);
 
-                    f_saida  << std::endl << "\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértice(s) e " << total_arestas_cluster_internas << " aresta(s) interna(s) e " << (total_arestas_cluster_externas - total_arestas_cluster_internas) << " externa(s)."<<std::endl;
-                    
-                    f_saida<<'\t';imprimir('-',50);
+                    f_saida << std::endl << "\tCluster " << ++contador_clusters << " - " << cluster->size() << " vértice(s) e " << total_arestas_cluster_internas << " aresta(s) interna(s) e " << (total_arestas_cluster_externas - total_arestas_cluster_internas) << " externa(s)." << std::endl;
+
+                    f_saida << '\t';
+                    imprimir('-', 50);
 
                     f_saida << "\t\tVértices no cluster: ";
 
@@ -407,6 +449,10 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
     this->total_milissegundos_balanceamento = 0;
     this->total_milissegundos_execucao_clusterizacao = 0;
 
+    this->total_arestas_em_clusters = 0;
+    this->total_vertices_em_clusters = 0;
+    this->total_clusters = 0;
+
     for (list<componente_grafo*>::iterator i = this->todos_componentes_grafo.begin(); i != this->todos_componentes_grafo.end(); ++i) {
 
         componente_grafo *c = *i;
@@ -417,7 +463,11 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
         long segundos_balanceamento_ordenacao_deste_componente = 0;
 
         bool componente_possui_tamanho_minimo_para_clusterizar = !this->conjunto_forma_outlier(arestas.size(), k);
+
+
         if (componente_possui_tamanho_minimo_para_clusterizar) {
+
+            this->total_clusters += k;
 
             // Evita que alguns vértices sejam descobertos apenas no final, caso
             // comum caso ocorram muitos empates e as arestas fiquem ordenadas pelo
@@ -428,6 +478,7 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
             segundos_balanceamento_ordenacao_deste_componente = helpers::milissegundos_entre_dois_clocks(instante_antes_ordenacao, instante_depois_ordenacao);
 
             auto instante_antes_clusterizacao = clock();
+
 
             union_find *unf = new union_find(vertices_clusterizacao);
 
@@ -457,8 +508,40 @@ list<cluster_vertices*> grafo::gerar_kruskal_k_clusters(int k) {
 
             segundos_clusterizacao_deste_componente = helpers::milissegundos_entre_dois_clocks(instante_antes_clusterizacao, instante_depois_clusterizacao);
             list<cluster_vertices*> clusters_componente = unf->clusters();
+            
+
+
+            for (list<cluster_vertices*>::iterator ck = clusters_componente.begin(); ck != clusters_componente.end(); ++ck) {
+                cluster_vertices *cluster = *ck;
+                
+                int total_vertices_neste_cluster = cluster->size();
+                int total_arestas_neste_cluster = aresta::total_de_arestas_no_cluster(cluster);
+                
+                if (total_arestas_neste_cluster > this->max_arestas_em_um_cluster) {
+                    this->max_arestas_em_um_cluster = total_arestas_neste_cluster;
+                }
+
+                if (total_vertices_neste_cluster > this->max_vertices_em_um_cluster) {
+                    this->max_vertices_em_um_cluster = total_vertices_neste_cluster;
+                }
+
+                if (total_arestas_neste_cluster < this->min_arestas_em_um_cluster) {
+                    this->min_arestas_em_um_cluster = total_arestas_neste_cluster;
+                }
+
+                if (total_vertices_neste_cluster < this->min_vertices_em_um_cluster) {
+                    this->min_vertices_em_um_cluster = total_vertices_neste_cluster;
+                }
+                this->total_arestas_por_cluster.push_back(total_arestas_neste_cluster);
+                this->total_vertices_por_cluster.push_back(total_vertices_neste_cluster);
+                
+                this->total_arestas_em_clusters += total_arestas_neste_cluster;
+                this->total_vertices_em_clusters += total_vertices_neste_cluster;
+            }
+            
             this->clusters_dos_componentes[c] = clusters_componente;
             clusters.merge(clusters_componente);
+
         } else {
             cluster_vertices *cluster_pequeno = new cluster_vertices();
 
