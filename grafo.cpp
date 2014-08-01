@@ -218,22 +218,14 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
     int mediana_arestas = 0; 
     
     if (this->total_arestas_em_clusters > 1){
-        for (int i=0;i<total_clusters;++i) cout<<total_arestas_por_cluster[i]<<" ";
-        cout<<std::endl;
         sort(this->total_arestas_por_cluster.begin(), this->total_arestas_por_cluster.end());
-        for (int i=0;i<total_clusters;++i) cout<<total_arestas_por_cluster[i]<<" ";
-        cout<<std::endl;
         mediana_arestas = this->total_arestas_por_cluster[this->total_clusters/2];
     }
     
     int mediana_vertices = 0; 
     
     if (this->total_vertices_em_clusters > 1){
-        for (int i=0;i<total_clusters;++i) cout<<total_vertices_por_cluster[i]<<" ";
-        cout<<std::endl;
         sort(this->total_vertices_por_cluster.begin(), this->total_vertices_por_cluster.end());
-        for (int i=0;i<total_clusters;++i) cout<<total_vertices_por_cluster[i]<<" ";
-        cout<<std::endl;
         mediana_vertices = this->total_vertices_por_cluster[this->total_clusters/2];
     }
     
@@ -282,7 +274,7 @@ void grafo::salvar_clusters_projetos_em_arquivo(int quantidade_clusters, string 
         f_saida << std::endl << "Máximo nº vértices em um cluster: " << this->max_vertices_em_um_cluster;
         f_saida << std::endl << "Média de vértices por cluster: "<<(this->total_vertices_em_clusters/this->total_clusters);
         f_saida << std::endl << "Mediana nº vértices por cluster: "<<mediana_vertices;
-        f_saida << std::endl << "Menor nº vértices em um cluster: " << this->min_vertices_em_um_cluster;
+        f_saida << std::endl << "Menor nº vértices em um cluster: " << (this->min_vertices_em_um_cluster <= 0 ? 1 : this->min_vertices_em_um_cluster) ;
         
         f_saida << std::endl << "Máximo nº arestas em um cluster: " << this->max_arestas_em_um_cluster;
         f_saida << std::endl << "Média de arestas por cluster: "<<(this->total_arestas_em_clusters/this->total_clusters);
